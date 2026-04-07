@@ -112,6 +112,8 @@ public class Pokemon {
 		String pokemon = null;
 		String lugar_escojido = zonas("Habitats.txt").get(zonaEscojida-1);
 		Random azar = new Random();
+		//arreglo de probabilidad
+		double acumulado = 0;
 		boolean capturado = false;
 		double prob = azar.nextDouble();
 		try {
@@ -125,7 +127,9 @@ public class Pokemon {
 				String probabilidad_pokemon = datos[2];
 				double probabilidad = Double.valueOf(probabilidad_pokemon);
 				if (lugar_escojido.equals(zona_pokemon)) {
-					if (prob <= probabilidad) {
+					//aqui la probabilidad
+					acumulado += probabilidad;
+					if (prob <= acumulado) {
 						System.out.println();
 						System.out.println("Oh!! Ha aparecido un increible " + pokemon);
 						System.out.println();
