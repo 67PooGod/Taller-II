@@ -1,8 +1,11 @@
 package Taller2;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
@@ -112,7 +115,6 @@ public class Pokemon {
 		String pokemon = null;
 		String lugar_escojido = zonas("Habitats.txt").get(zonaEscojida-1);
 		Random azar = new Random();
-		//arreglo de probabilidad
 		double acumulado = 0;
 		boolean capturado = false;
 		double prob = azar.nextDouble();
@@ -127,7 +129,6 @@ public class Pokemon {
 				String probabilidad_pokemon = datos[2];
 				double probabilidad = Double.valueOf(probabilidad_pokemon);
 				if (lugar_escojido.equals(zona_pokemon)) {
-					//aqui la probabilidad
 					acumulado += probabilidad;
 					if (prob <= acumulado) {
 						System.out.println();
@@ -180,5 +181,108 @@ public class Pokemon {
 		else {
 			return null;	
 		}
+	}
+	
+	public ArrayList<String> VerPokemonAtrapados(ArrayList<String> PokemonAtrapados) {
+		ArrayList<String> Resultado = new ArrayList<>();
+		Scanner sc = new Scanner(System.in);
+		int cont_lineas = 0;
+		try {
+			FileReader arch = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+				cont_lineas ++;
+				if (cont_lineas > 1) {
+					Resultado.add(linea);
+				}
+				linea = leyendo.readLine();
+			}
+			leyendo.close();
+			System.out.println();
+			System.out.println("Lista de Pokemon que atrapaste escoje para mover hacia el primero, 0 para regresar");
+			System.out.println();
+			System.out.println("0) Regresar");
+			for (int r = 0; r < Resultado.size(); r++) {
+				System.out.println(r+1 + ") " + Resultado.get(r));
+			}
+			int opcion = sc.nextInt();
+			sc.nextLine();
+			if (opcion > 0) {
+				EscojerPokemonEquipo(opcion);	
+			}
+			else {
+				System.out.println("Opcion Invalida");
+			}
+		} catch (Exception e) {
+			System.out.println("Error ver pokemon " + e);
+		}
+		return Resultado;
+	}
+	
+	public static ArrayList<String> EscojerPokemonEquipo(int indicePokemon) {
+		ArrayList<String> ResultadoFinal = new ArrayList<>();
+		int cont_lineas = 0;
+		try {
+			FileReader arch = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+				String[] datos = linea.split(";");
+				String Pokemon = datos[0];
+				String Estado = datos[1];
+				cont_lineas ++;
+				if (cont_lineas == 1) {
+					ResultadoFinal.add(Pokemon + ";" + Estado);
+				}
+				if (cont_lineas > 1) {
+	                ResultadoFinal.add(Pokemon + ";" + Estado);
+				}
+				linea = leyendo.readLine();
+			}
+			leyendo.close();
+			cont_lineas = 0;
+			FileWriter archivoUsuarios = new FileWriter("Registros.txt");
+			BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+	        if (indicePokemon > 1 && indicePokemon < ResultadoFinal.size()) {
+	            String anteriorPrimero = ResultadoFinal.get(1);
+	            ResultadoFinal.set(1, ResultadoFinal.get(indicePokemon));
+	            ResultadoFinal.set(indicePokemon, anteriorPrimero);
+	        }
+			for (int i = 0; i < ResultadoFinal.size(); i++) {
+			    escritorBuffer.write(ResultadoFinal.get(i));
+	            if (i < ResultadoFinal.size() - 1) {
+	                escritorBuffer.newLine();
+	            }
+	        }
+			escritorBuffer.close();	
+		} catch (Exception e) {
+			System.out.println("Error ver pokemon " + e);
+		}
+		return ResultadoFinal;
+	}
+
+	public class TablaTipos {
+		private static final double[][] EFECTIVIDAD = {
+			// NOR  FUE  AGU  PLA  ELE  HIE  LUC  VEN  TIE  VOL  PSI  BIC  ROC  FAN  DRA  ACE  SIN  HAD
+			{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0, 0.5, 1.0, 1.0 }, // NORMAL
+			{  1.0, 0.5, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0 }, // FUEGO
+			{  1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // AGUA
+			{  1.0, 0.5, 2.0, 0.5, 1.0, 1.0, 1.0, 0.5, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0 }, // PLANTA
+			{  1.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // ELECTRICO
+			{  1.0, 0.5, 0.5, 2.0, 1.0, 0.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0 }, // HIELO
+			{  2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 0.5, 0.5, 0.5, 2.0, 0.0, 1.0, 2.0, 2.0, 0.5 }, // LUCHA
+			{  1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.0, 1.0, 2.0 }, // VENENO
+			{  1.0, 2.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0 }, // TIERRA
+			{  1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 0.5, 1.0, 1.0 }, // VOLADOR
+			{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0 }, // PSIQUICO
+			{  1.0, 0.5, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 0.5, 1.0, 0.5, 2.0, 0.5 }, // BICHO
+	    	{  1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0 }, // ROCA
+	    	{  0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0 }, // FANTASMA
+	    	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.0 }, // DRAGON
+	    	{  1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0, 2.0 }, // ACERO
+	    	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5 }, // SINIESTRO
+	    	{  1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 2.0, 1.0 }  // HADA
+	    };
 	}
 }
