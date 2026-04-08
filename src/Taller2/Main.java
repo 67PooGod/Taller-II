@@ -93,6 +93,7 @@ public class Main {
 					switch (opcion2) {
 						case 1: 
 							//revisar equipo
+							//lucas
 							break;
 						case 2:
 							//salir a capturar pokemon
@@ -109,16 +110,19 @@ public class Main {
 							}
 							break;
 						case 3:
-							//acceso al pc
+							p.VerPokemonAtrapados(Atrapados);
 							break;
 						case 4: 
 							//retar a un gimnasio
+							//Marcelo
 							break;
 						case 5: 
 							//desafio de alto mando
+							//Marcelo
 							break;
 						case 6:
 							//curar
+							//Lucas
 							break;
 						case 7:
 							System.out.println();
@@ -142,6 +146,16 @@ public class Main {
 				}
 			}	
 		}
+	}
+	public static String[] seleccionar(ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
+		String[] seleccionados = new String[5];
+		int LongitudAtrapados = PokemonAtrapados.size();
+		for (int i = 0; i < LongitudAtrapados; i++) {
+			if (PokemonAtrapados.get(i) != null) {
+				
+			}
+		}
+		return seleccionados;
 	}
 	public static void Guardar(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
 		ArrayList<String> respaldo = new ArrayList<>();
