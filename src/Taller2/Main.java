@@ -67,6 +67,7 @@ public class Main {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					NombreIngresado = Nombre;
+					Sobreescribir("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
 					p.setEmpezo(true);
 				}
 				if (NombreIngresado != null && NombreIngresado != " ") {
@@ -156,6 +157,16 @@ public class Main {
 			}
 		}
 		return seleccionados;
+	}
+	public static void Sobreescribir(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
+		try {
+			FileWriter archivoUsuarios = new FileWriter(archivo);
+			BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+			escritorBuffer.write(Nombre + ";" + Medallas);
+			escritorBuffer.close();	
+		} catch (Exception e) {
+			System.out.println("Error " + e);
+		}
 	}
 	public static void Guardar(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
 		ArrayList<String> respaldo = new ArrayList<>();
