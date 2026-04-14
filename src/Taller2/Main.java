@@ -21,6 +21,7 @@ public class Main {
 		ArrayList<String> EstadoEquipo = new ArrayList<>();
 		boolean salir = false;
 		boolean mostrado = false;
+		boolean NuevoUsuario = true;
 		boolean GuardarCaptura = false;
 		int cont_lineas = 0;
 		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
@@ -43,6 +44,7 @@ public class Main {
 							String Medalla = datos[1];
 							int Num_medalla = Integer.valueOf(Medalla);
 							if (Nombre != null && Nombre != " ") {
+								NuevoUsuario = false;
 								p.setNombre(Nombre);
 								NombreIngresado = Nombre;
 								p.setGuardar(false);
@@ -91,13 +93,14 @@ public class Main {
 				}
 			}
 			while (opcion == 2) {
-				if (p.isGuardar() == true && GuardarCaptura == false) {
+				if (p.isGuardar() == true && NuevoUsuario == true) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					NombreIngresado = Nombre;
 					Sobreescribir("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
 					p.setGuardar(true);
 					GuardarCaptura = true;
+					NuevoUsuario = false;
 				}
 				if (NombreIngresado != null && NombreIngresado != " ") {
 					if (mostrado == false) {
