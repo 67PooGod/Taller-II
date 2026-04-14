@@ -12,14 +12,16 @@ import java.util.Scanner;
 
 public class Pokemon {
 	private String Nombre;
-	private boolean Empezo;
+	private boolean Guardar;
 	private String Medallas;
 	private String Estado;
-	public Pokemon(String Nombre, boolean Empezo, String Medallas, String Estado) {
+	private ArrayList<String> PokemonEquipo;
+	public Pokemon(String Nombre, boolean Guardar, String Medallas, String Estado, ArrayList<String> PokemonEquipo) {
 		this.Nombre = Nombre;
-		this.Empezo = Empezo;
+		this.Guardar = Guardar;
 		this.Medallas = Medallas;
 		this.Estado = Estado;
+		this.PokemonEquipo = PokemonEquipo;
 	}
 
 	public String getNombre(String Nombre) {
@@ -29,23 +31,40 @@ public class Pokemon {
 	public void setNombre(String Nombre) {
 	    this.Nombre = Nombre;
 	}
+	
+	
+	public boolean isGuardar() {
+		return Guardar;
+	}
 
-	public boolean isEmpezo(boolean Empezo) {
-		return this.Empezo;
+	public void setGuardar(boolean guardar) {
+		this.Guardar = guardar;
 	}
-	
-	public void setEmpezo(boolean Empezo) {
-	    this.Empezo = Empezo;
+
+	public String getNombre() {
+		return Nombre;
 	}
-	
-	public boolean isEstado(String Estado) {
-		return this.Empezo;
+
+	public String getEstado() {
+		return Estado;
+	}
+
+	public String isEstado(String Estado) {
+		return this.Estado;
 	}
 	
 	public void setEstado(String Estado) {
 	    this.Estado = Estado;
 	}
-	
+
+	public ArrayList<String> getPokemonEquipo() {
+		return PokemonEquipo;
+	}
+
+	public void setPokemonEquipo(ArrayList<String> pokemonEquipo) {
+		PokemonEquipo = pokemonEquipo;
+	}
+
 	public String getMedallas() {
 		try {
 			FileReader arch = new FileReader("Registros.txt");
@@ -261,28 +280,178 @@ public class Pokemon {
 		}
 		return ResultadoFinal;
 	}
+	
+	//wip batallar gimnasio
 
-	public class TablaTipos {
-		private static final double[][] EFECTIVIDAD = {
-			// NOR  FUE  AGU  PLA  ELE  HIE  LUC  VEN  TIE  VOL  PSI  BIC  ROC  FAN  DRA  ACE  SIN  HAD
-			{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0, 0.5, 1.0, 1.0 }, // NORMAL
-			{  1.0, 0.5, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0 }, // FUEGO
-			{  1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // AGUA
-			{  1.0, 0.5, 2.0, 0.5, 1.0, 1.0, 1.0, 0.5, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0 }, // PLANTA
-			{  1.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // ELECTRICO
-			{  1.0, 0.5, 0.5, 2.0, 1.0, 0.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0 }, // HIELO
-			{  2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 0.5, 0.5, 0.5, 2.0, 0.0, 1.0, 2.0, 2.0, 0.5 }, // LUCHA
-			{  1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.0, 1.0, 2.0 }, // VENENO
-			{  1.0, 2.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0 }, // TIERRA
-			{  1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 0.5, 1.0, 1.0 }, // VOLADOR
-			{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0 }, // PSIQUICO
-			{  1.0, 0.5, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 0.5, 1.0, 0.5, 2.0, 0.5 }, // BICHO
-	    	{  1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0 }, // ROCA
-	    	{  0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0 }, // FANTASMA
-	    	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.0 }, // DRAGON
-	    	{  1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0, 2.0 }, // ACERO
-	    	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5 }, // SINIESTRO
-	    	{  1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 2.0, 1.0 }  // HADA
-	    };
+	public static void RetarGimnasio(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual) {
+		boolean batalla = true;
+		int contPelear = 0;
+		double[][] TipoPelear = new double[17][17];
+		ArrayList<String> PokemonEnemigo = new ArrayList<>();
+		try {
+			while (batalla == true) {
+				FileReader arch = new FileReader("Gimnasios.txt");
+				BufferedReader leyendo = new BufferedReader(arch);
+				String linea = leyendo.readLine();
+				while ((linea) != null) {
+					String[] datos = linea.split(";");
+					String Entrenador = datos[0];
+					String EstadoDerrotar = datos[2];
+					String cantPokemon = datos[3];
+					int EnteroCantPokemon = Integer.valueOf(cantPokemon);
+					contPelear = EnteroCantPokemon;
+					if (EstadoDerrotar.equals("Sin derrotar")) {
+						if (EnteroCantPokemon == 1) {
+							String Pokemon1 = datos[3];
+							PokemonEnemigo.add(Pokemon1);
+							break;
+						}
+						else if (EnteroCantPokemon == 2) {
+							String Pokemon1 = datos[3];
+							String Pokemon2 = datos[4];
+							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2);
+							break;
+						}
+						else if (EnteroCantPokemon == 3) {
+							String Pokemon1 = datos[3];
+							String Pokemon2 = datos[4];
+							String Pokemon3 = datos[5];
+							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3);
+							break;
+						}
+						else if (EnteroCantPokemon == 4) {
+							String Pokemon1 = datos[3];
+							String Pokemon2 = datos[4];
+							String Pokemon3 = datos[5];
+							String Pokemon4 = datos[6];
+							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4);
+							break;
+						}
+						else if (EnteroCantPokemon == 5) {
+							String Pokemon1 = datos[3];
+							String Pokemon2 = datos[4];
+							String Pokemon3 = datos[5];
+							String Pokemon4 = datos[6];
+							String Pokemon5 = datos[7];
+							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4 + "+" + Pokemon5);
+							break;
+						}
+						else if (EnteroCantPokemon == 6) {
+							String Pokemon1 = datos[3];
+							String Pokemon2 = datos[4];
+							String Pokemon3 = datos[5];
+							String Pokemon4 = datos[6];
+							String Pokemon5 = datos[7];
+							String Pokemon6 = datos[8];
+							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4 + "+" + Pokemon5 + "+" + Pokemon6);
+							break;
+						}	
+					}
+					linea = leyendo.readLine();
+				}
+				ArrayList<String> tiposJugador = verTipoPokemon(PokemonEquipo);
+				ArrayList<String> tiposEnemigo = verTipoPokemon(PokemonEnemigo);
+				ArrayList<Integer> PuntosJugador = verStatsPokemon(PokemonEquipo);
+				ArrayList<Integer> PuntosEnemigo = verStatsPokemon(PokemonEnemigo);
+				System.out.println(PuntosJugador);
+				System.out.println(PokemonEquipo);
+				break;
+			}
+		} catch (Exception e) {
+			System.out.println("Error batallar gimnasio " + e);
+		}
 	}
+	
+	//wip ver tipo del pokemon combatiente
+	
+	public static ArrayList<String> verTipoPokemon(ArrayList<String> PokemonSeleccionado) {
+		ArrayList<String> Tipos = new ArrayList<>();
+		try {
+			FileReader arch = new FileReader("Pokedex.txt");
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+				String[] datos = linea.split(";");
+				String Pokemon = datos[0];
+				String tipo = datos[9];
+				for (int p = 0; p < PokemonSeleccionado.size(); p++) {
+					if (Pokemon.equals(PokemonSeleccionado.get(p))) {
+						Tipos.add(tipo);
+					}
+				}
+				linea = leyendo.readLine();
+			}
+		} catch (Exception e) {
+			System.out.println("Error ver tipo Pokemon " + e);
+		}
+		return Tipos;
+	}
+	
+	//wip ver stats totales del pokemon
+	
+	public static ArrayList<Integer> verStatsPokemon(ArrayList<String> PokemonSeleccionado) {
+		ArrayList <Integer> Stats = new ArrayList<>();
+		int sumador = 0;
+		try {
+			FileReader arch = new FileReader("Pokedex.txt");
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+				String[] datos = linea.split(";");
+				String Pokemon = datos[0];
+				for (int p = 0; p < PokemonSeleccionado.size(); p++) {
+					if (Pokemon.equals(PokemonSeleccionado.get(p))) {
+						String vida = datos[3];
+						String ataque = datos[4];
+						String defensa = datos[5];
+						String ataqueEspecial = datos[6];
+						String defensaEspecial = datos[7];
+						String velocidad = datos[8];
+						int vida_int = Integer.valueOf(vida);
+						int ataque_int = Integer.valueOf(ataque);
+						int defensa_int = Integer.valueOf(defensa);
+						int ataqueEspecial_int = Integer.valueOf(ataqueEspecial);
+						int defensaEspecial_int = Integer.valueOf(defensaEspecial);
+						int velocidad_int = Integer.valueOf(velocidad);
+						sumador = vida_int + ataque_int + defensa_int + ataqueEspecial_int + defensaEspecial_int + velocidad_int;
+						Stats.add(sumador);
+					}
+				}
+				sumador = 0;
+				linea = leyendo.readLine();
+			}
+		} catch (Exception e) {
+			System.out.println("Error ver tipo Pokemon " + e);
+		}
+		return Stats;
+	}
+	
+	public static double[][] getEFECTIVIDAD() {
+		return EFECTIVIDAD;
+	}
+
+	public static void setEFECTIVIDAD(double[][] eFECTIVIDAD) {
+		EFECTIVIDAD = eFECTIVIDAD;
+	}
+	private static double[][] EFECTIVIDAD = {
+		// NOR  FUE  AGU  PLA  ELE  HIE  LUC  VEN  TIE  VOL  PSI  BIC  ROC  FAN  DRA  ACE  SIN  HAD
+		{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0, 0.5, 1.0, 1.0 }, // NORMAL
+		{  1.0, 0.5, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0 }, // FUEGO
+		{  1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // AGUA
+		{  1.0, 0.5, 2.0, 0.5, 1.0, 1.0, 1.0, 0.5, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0 }, // PLANTA
+		{  1.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0 }, // ELECTRICO
+		{  1.0, 0.5, 0.5, 2.0, 1.0, 0.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0 }, // HIELO
+		{  2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 0.5, 0.5, 0.5, 2.0, 0.0, 1.0, 2.0, 2.0, 0.5 }, // LUCHA
+		{  1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.0, 1.0, 2.0 }, // VENENO
+		{  1.0, 2.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.5, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0 }, // TIERRA
+		{  1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 0.5, 1.0, 1.0 }, // VOLADOR
+		{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0 }, // PSIQUICO
+		{  1.0, 0.5, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 0.5, 1.0, 0.5, 2.0, 0.5 }, // BICHO
+	   	{  1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0 }, // ROCA
+	   	{  0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0 }, // FANTASMA
+	   	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.0 }, // DRAGON
+	    {  1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 1.0, 2.0 }, // ACERO
+	   	{  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5 }, // SINIESTRO
+	   	{  1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 2.0, 1.0 }  // HADA
+	};
 }
