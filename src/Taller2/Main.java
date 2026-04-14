@@ -13,11 +13,17 @@ import java.util.ArrayList;
 public class Main {
 	public static void main(String[] args) {
 		String NombreIngresado = null;
+		ArrayList<String> AtrapadosObtenidos = new ArrayList<>();
+		ArrayList<String> EstadoObtenidos = new ArrayList<>();
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
+		ArrayList<String> Equipo = new ArrayList<>();
+		ArrayList<String> EstadoEquipo = new ArrayList<>();
 		boolean salir = false;
 		boolean mostrado = false;
-		Pokemon p = new Pokemon(null, false, "0", "Vivo");
+		boolean GuardarCaptura = false;
+		int cont_lineas = 0;
+		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
 		Scanner sc = new Scanner(System.in);
 		while (salir == false) {
 			System.out.println("1) Continuar");
@@ -31,7 +37,7 @@ public class Main {
 					BufferedReader leyendo = new BufferedReader(archivoConteo);
 					String linea = leyendo.readLine();
 					while (linea != null) {
-						if (linea.length() > 1) {
+						if (cont_lineas == 0) {
 							String[] datos = linea.split(";");
 							String Nombre = datos[0];
 							String Medalla = datos[1];
@@ -39,14 +45,36 @@ public class Main {
 							if (Nombre != null && Nombre != " ") {
 								p.setNombre(Nombre);
 								NombreIngresado = Nombre;
-								p.setEmpezo(true);
+								p.setGuardar(false);
 							}
 							if (Num_medalla > 0) {
 								p.setMedallas(Medalla);
 							}
-						break;
+						}
+						if (cont_lineas > 1) {
+							String[] partes = linea.split(";");
+							String Pokemon = partes[0];
+							String Estados = partes[1];
+							Atrapados.add(Pokemon);
+							Estado.add(Estados);
+						}
+						if (cont_lineas < 7 && cont_lineas > 0) {
+							String[] partes = linea.split(";");
+							String Pokemon = partes[0];
+							String Estados = partes[1];
+							Equipo.add(Pokemon);
+							EstadoEquipo.add(Estados);
+							p.setPokemonEquipo(Atrapados);
+						}
+						else if (cont_lineas > 0) {
+							String[] partes = linea.split(";");
+							String Pokemon = partes[0];
+							String Estados = partes[1];
+							Atrapados.add(Pokemon);
+							Estado.add(Estados);
 						}
 						linea = leyendo.readLine();
+						cont_lineas++;
 					}
 					if (NombreIngresado == null) {
 						System.out.println();
@@ -63,15 +91,15 @@ public class Main {
 				}
 			}
 			while (opcion == 2) {
-				if (p.isEmpezo(false) == false) {
+				if (p.isGuardar() == true && GuardarCaptura == false) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					NombreIngresado = Nombre;
 					Sobreescribir("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
-					p.setEmpezo(true);
+					p.setGuardar(true);
+					GuardarCaptura = true;
 				}
 				if (NombreIngresado != null && NombreIngresado != " ") {
-					p.setEmpezo(true);
 					if (mostrado == false) {
 						mostrado = true;
 						System.out.println();
@@ -106,16 +134,21 @@ public class Main {
 							String atrapado = p.ver_pokemon(opcion3);
 							sc.nextLine();
 							if (atrapado != null) {
-								Atrapados.add(atrapado);
-								Estado.add("Vivo");
+								p.setGuardar(true);
+								GuardarCaptura = true;
+								AtrapadosObtenidos.add(atrapado);
+								EstadoObtenidos.add("Vivo");
 							}
 							break;
 						case 3:
 							p.VerPokemonAtrapados(Atrapados);
 							break;
 						case 4: 
-							//retar a un gimnasio
-							//Marcelo
+							for (int e = 0; e <= 5; e++) {
+								p.setPokemonEquipo(Equipo);	
+							}
+							ArrayList<String> Equipador = p.getPokemonEquipo();
+							p.RetarGimnasio("Gimnasios.txt", Equipador, EstadoEquipo);
 							break;
 						case 5: 
 							//desafio de alto mando
@@ -129,13 +162,25 @@ public class Main {
 							System.out.println();
 							System.out.println("Guardado");
 							System.out.println();
-							Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
+							if (GuardarCaptura == true) {
+								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);		
+								GuardarCaptura = false;
+							}
+							else {
+								Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado, false);				
+							}
 							break;
 						case 8:
 							System.out.println();
 							System.out.println("Guardado y salir");
 							System.out.println();
-							Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
+							if (GuardarCaptura == true) {
+								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
+								GuardarCaptura = false;
+							}
+							else {
+								Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado, false);				
+							}
 							break;
 						default:
 							System.out.println();
@@ -168,31 +213,73 @@ public class Main {
 			System.out.println("Error " + e);
 		}
 	}
-	public static void Guardar(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
+	public static void GuardarCapturados(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados,ArrayList<String> PokemonNuevos, ArrayList<String> Estado, ArrayList<String> EstadoObtenido, boolean yaEscrito) {
 		ArrayList<String> respaldo = new ArrayList<>();
-		try {
-			FileReader archivoConteo = new FileReader("Registros.txt");
-			BufferedReader leyendo = new BufferedReader(archivoConteo);
-			String linea = leyendo.readLine();
-			while (linea != null) {
-				respaldo.add(linea);
-				linea = leyendo.readLine();
+		boolean sobreescribir = true;
+		if (yaEscrito == false) {
+			try {
+				FileReader archivoConteo = new FileReader("Registros.txt");
+				BufferedReader leyendo = new BufferedReader(archivoConteo);
+				String linea = leyendo.readLine();
+				while (linea != null) {
+					sobreescribir = true;
+					respaldo.add(linea);
+					linea = leyendo.readLine();
+				}
+				leyendo.close();
+				FileWriter archivoUsuarios = new FileWriter(archivo);
+				BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+				for (int i = 0; i < respaldo.size(); i++) {
+					if (respaldo.get(i) != null && sobreescribir == true) {
+						escritorBuffer.write(respaldo.get(i));
+						if (i < respaldo.size() - 1) {
+							escritorBuffer.newLine();
+						}	
+					}
+				}
+				escritorBuffer.newLine();
+				for (int j = 0; j < PokemonNuevos.size(); j ++) {
+					if (PokemonNuevos.get(j) != null && sobreescribir == true) {
+						escritorBuffer.write(PokemonNuevos.get(j) + ";" + EstadoObtenido.get(j));
+						if (j < PokemonNuevos.size() - 1) {
+							escritorBuffer.newLine();
+						}	
+					}
+				}
+				escritorBuffer.close();
+			} catch (Exception e) {
+				System.out.println("Error " + e);
 			}
-			leyendo.close();
-	        for (int i = 0; i < PokemonAtrapados.size(); i++) {
-	            respaldo.add(PokemonAtrapados.get(i) + ";" + Estado.get(i));
-	        }
-			FileWriter archivoUsuarios = new FileWriter(archivo);
-			BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
-			for (int i = 0; i < respaldo.size(); i++) {
-			    escritorBuffer.write(respaldo.get(i));
-	            if (i < respaldo.size() - 1) {
-	                escritorBuffer.newLine();
-	            }
-	        }
-			escritorBuffer.close();	
-		} catch (Exception e) {
-			System.out.println("Error " + e);
+		}
+	}
+	public static void Guardar(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado, boolean yaEscrito) {
+		ArrayList<String> respaldo = new ArrayList<>();
+		boolean sobreescribir = true;
+		if (yaEscrito == false) {
+			try {
+				FileReader archivoConteo = new FileReader("Registros.txt");
+				BufferedReader leyendo = new BufferedReader(archivoConteo);
+				String linea = leyendo.readLine();
+				while (linea != null) {
+					sobreescribir = true;
+					respaldo.add(linea);
+					linea = leyendo.readLine();
+				}
+				leyendo.close();
+				FileWriter archivoUsuarios = new FileWriter(archivo);
+				BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+				for (int i = 0; i < respaldo.size(); i++) {
+					if (respaldo.get(i) != null && sobreescribir == true) {
+						escritorBuffer.write(respaldo.get(i));
+						if (i < respaldo.size() - 1) {
+							escritorBuffer.newLine();
+						}	
+					}
+				}
+				escritorBuffer.close();
+			} catch (Exception e) {
+				System.out.println("Error " + e);
+			}
 		}
 	}
 }
