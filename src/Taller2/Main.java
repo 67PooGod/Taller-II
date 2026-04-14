@@ -166,7 +166,10 @@ public class Main {
 							System.out.println("Guardado");
 							System.out.println();
 							if (GuardarCaptura == true) {
-								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);		
+								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
+								for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
+									AtrapadosObtenidos.remove(s);	
+								}
 								GuardarCaptura = false;
 							}
 							else {
