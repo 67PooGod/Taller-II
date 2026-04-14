@@ -125,80 +125,94 @@ public class Pokemon {
 	public void ver_zonas(String Archivo) {
 		int cantidad = cant_zonas("Habitats.txt");
 		for (int z = 0; z < cantidad; z++) {
+			if (z == 0) {
+				System.out.println(z + ") " + "Volver");
+			}
 			System.out.println(z+1 + ") " + zonas("Habitats.txt").get(z));
 		}
 	}
 	
 	public String ver_pokemon(int zonaEscojida) {
-		Scanner sc = new Scanner(System.in);
-		String pokemon = null;
-		String lugar_escojido = zonas("Habitats.txt").get(zonaEscojida-1);
-		Random azar = new Random();
-		double acumulado = 0;
-		boolean capturado = false;
-		double prob = azar.nextDouble();
-		try {
-			FileReader arch = new FileReader("Pokedex.txt");
-			BufferedReader leyendo = new BufferedReader(arch);
-			String linea = leyendo.readLine();
-			while ((linea) != null) {
-				String[] datos = linea.split(";");
-				pokemon = datos[0];
-				String zona_pokemon = datos[1];
-				String probabilidad_pokemon = datos[2];
-				double probabilidad = Double.valueOf(probabilidad_pokemon);
-				if (lugar_escojido.equals(zona_pokemon)) {
-					acumulado += probabilidad;
-					if (prob <= acumulado) {
-						System.out.println();
-						System.out.println("Oh!! Ha aparecido un increible " + pokemon);
-						System.out.println();
-						System.out.println("Que deseas hacer?");
-						System.out.println();
-						System.out.println("1) Capturar");
-						System.out.println("2) Huir");
-						int opcion = sc.nextInt();
-						sc.nextLine();
-						while (opcion == 1) {
-							if (opcion == 1) {
-								Random azar2 = new Random();
-								double prob2 = azar2.nextDouble();
-								if (prob2 < 0.50) {
-									System.out.println();
-									System.out.println(pokemon + " capturado con exito!!");
-									System.out.println();
-									System.out.println(pokemon + " ha sido agregado a tu equipo!");
-									capturado = true;
-									return pokemon;
-								}
-								else {
-									System.out.println();
-									System.out.println("oh no el pokemon " + pokemon + " a escapado de la pokeball");
-									System.out.println();
-									System.out.println("Que deseas hacer?");
-									System.out.println();
-									System.out.println("1) Capturar");
-									System.out.println("2) Huir");
-									opcion = sc.nextInt();
-									sc.nextLine();
+		if (zonaEscojida < 0 && zonaEscojida < cant_zonas("Habitats.txt")) {
+			System.out.println("");
+			System.out.println("Opcion Invalida");
+			return null;
+		}
+		else if (zonaEscojida >= 1 && zonaEscojida < cant_zonas("Habitats.txt")) {
+			Scanner sc = new Scanner(System.in);
+			String pokemon = null;
+			String lugar_escojido = zonas("Habitats.txt").get(zonaEscojida-1);
+			int LugarEntero = Integer.valueOf(lugar_escojido);
+			Random azar = new Random();
+			double acumulado = 0;
+			boolean capturado = false;
+			double prob = azar.nextDouble();
+			try {
+				FileReader arch = new FileReader("Pokedex.txt");
+				BufferedReader leyendo = new BufferedReader(arch);
+				String linea = leyendo.readLine();
+				while ((linea) != null) {
+					String[] datos = linea.split(";");
+					pokemon = datos[0];
+					String zona_pokemon = datos[1];
+					String probabilidad_pokemon = datos[2];
+					double probabilidad = Double.valueOf(probabilidad_pokemon);
+					if (lugar_escojido.equals(zona_pokemon)) {
+						acumulado += probabilidad;
+						if (prob <= acumulado) {
+							System.out.println();
+							System.out.println("Oh!! Ha aparecido un increible " + pokemon);
+							System.out.println();
+							System.out.println("Que deseas hacer?");
+							System.out.println();
+							System.out.println("1) Capturar");
+							System.out.println("2) Huir");
+							int opcion = sc.nextInt();
+							sc.nextLine();
+							while (opcion == 1) {
+								if (opcion == 1) {
+									Random azar2 = new Random();
+									double prob2 = azar2.nextDouble();
+									if (prob2 < 0.50) {
+										System.out.println();
+										System.out.println(pokemon + " capturado con exito!!");
+										System.out.println();
+										System.out.println(pokemon + " ha sido agregado a tu equipo!");
+										capturado = true;
+										return pokemon;
+									}
+									else {
+										System.out.println();
+										System.out.println("oh no el pokemon " + pokemon + " a escapado de la pokeball");
+										System.out.println();
+										System.out.println("Que deseas hacer?");
+										System.out.println();
+										System.out.println("1) Capturar");
+										System.out.println("2) Huir");
+										opcion = sc.nextInt();
+										sc.nextLine();
+									}
 								}
 							}
-						}
-						if (opcion == 2) {
-							break;
+							if (opcion == 2) {
+								break;
+							}
 						}
 					}
+					linea = leyendo.readLine();
 				}
-				linea = leyendo.readLine();
+			} catch (Exception e) {
+				System.out.println("Error ver pokemon " + e);
 			}
-		} catch (Exception e) {
-			System.out.println("Error ver pokemon " + e);
-		}
-		if (capturado == true) {
-			return pokemon;
+			if (capturado == true) {
+				return pokemon;
+			}
+			else {
+				return null;	
+			}	
 		}
 		else {
-			return null;	
+			return null;
 		}
 	}
 	
