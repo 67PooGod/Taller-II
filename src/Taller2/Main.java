@@ -93,7 +93,7 @@ public class Main {
 				}
 			}
 			while (opcion == 2) {
-				if (p.isGuardar() == true && NuevoUsuario == true) {
+				if (NuevoUsuario == true) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					NombreIngresado = Nombre;
