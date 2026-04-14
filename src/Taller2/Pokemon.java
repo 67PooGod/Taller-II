@@ -138,11 +138,15 @@ public class Pokemon {
 			System.out.println("Opcion Invalida");
 			return null;
 		}
-		else if (zonaEscojida >= 1 && zonaEscojida < cant_zonas("Habitats.txt")) {
+		else if (zonaEscojida > cant_zonas("Habitats.txt")) {
+			System.out.println("");
+			System.out.println("Opcion Invalida");
+			return null;
+		}
+		else if (zonaEscojida >= 1 && zonaEscojida <= cant_zonas("Habitats.txt")) {
 			Scanner sc = new Scanner(System.in);
 			String pokemon = null;
 			String lugar_escojido = zonas("Habitats.txt").get(zonaEscojida-1);
-			int LugarEntero = Integer.valueOf(lugar_escojido);
 			Random azar = new Random();
 			double acumulado = 0;
 			boolean capturado = false;
