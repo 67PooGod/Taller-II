@@ -182,6 +182,9 @@ public class Main {
 							System.out.println();
 							if (GuardarCaptura == true) {
 								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
+								for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
+									AtrapadosObtenidos.remove(s);	
+								}
 								GuardarCaptura = false;
 							}
 							else {
@@ -192,7 +195,7 @@ public class Main {
 							System.out.println();
 							System.out.println("Opcion invalida, escoje de nuevo");
 					}
-					if (opcion == 8) {
+					if (opcion2 == 8) {
 						break;
 					}
 				}
