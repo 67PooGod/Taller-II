@@ -12,13 +12,13 @@ import java.util.ArrayList;
 
 public class Main {
 	public static void main(String[] args) {
-		String NombreIngresado = null;
+		String nombre = null;
 		ArrayList<String> AtrapadosObtenidos = new ArrayList<>();
 		ArrayList<String> EstadoObtenidos = new ArrayList<>();
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
-		ArrayList<String> EstadoEquipo = new ArrayList<>();
+		String ResultadoBatalla = null;
 		boolean salir = false;
 		boolean mostrado = false;
 		boolean NuevoUsuario = true;
@@ -33,83 +33,29 @@ public class Main {
 			int opcion = sc.nextInt();
 			sc.nextLine();
 			while (opcion == 1) {
-				try {
-					FileReader archivoConteo = new FileReader("Registros.txt");
-					BufferedReader leyendo = new BufferedReader(archivoConteo);
-					String linea = leyendo.readLine();
-					while (linea != null) {
-						if (cont_lineas == 0) {
-							String[] datos = linea.split(";");
-							String Nombre = datos[0];
-							String Medalla = datos[1];
-							int Num_medalla = Integer.valueOf(Medalla);
-							if (Nombre != null && Nombre != " ") {
-								NuevoUsuario = false;
-								p.setNombre(Nombre);
-								NombreIngresado = Nombre;
-								p.setGuardar(false);
-							}
-							if (Num_medalla > 0) {
-								p.setMedallas(Medalla);
-							}
-						}
-						if (cont_lineas > 1) {
-							String[] partes = linea.split(";");
-							String Pokemon = partes[0];
-							String Estados = partes[1];
-							Atrapados.add(Pokemon);
-							Estado.add(Estados);
-						}
-						if (cont_lineas < 7 && cont_lineas > 0) {
-							String[] partes = linea.split(";");
-							String Pokemon = partes[0];
-							String Estados = partes[1];
-							Equipo.add(Pokemon);
-							EstadoEquipo.add(Estados);
-							p.setPokemonEquipo(Atrapados);
-						}
-						else if (cont_lineas > 0) {
-							String[] partes = linea.split(";");
-							String Pokemon = partes[0];
-							String Estados = partes[1];
-							Atrapados.add(Pokemon);
-							Estado.add(Estados);
-						}
-						linea = leyendo.readLine();
-						cont_lineas++;
-					}
-					if (NombreIngresado == null) {
-						System.out.println();
-						System.out.println("No puedes continuar, no existe guardados, crea una nueva partida");
-						System.out.println();
-						break;
-					}
-					leyendo.close();
-					if (NombreIngresado != null) {
-						opcion = 2;	
-					}
-				} catch (Exception e) {
-					System.out.println("Error de lectura" + e);
-				}
+				nombre = VerRegistrosNombre("Registros.txt");
+				opcion = 2;
 			}
 			while (opcion == 2) {
-				if (NuevoUsuario == true) {
+				nombre = VerRegistrosNombre("Registros.txt");
+				ArrayList<String> Equipador = ActualizarPokemonEquipo("Registros.txt");
+				ArrayList<String> EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");
+				if (NuevoUsuario == true && nombre == null) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
-					NombreIngresado = Nombre;
-					Sobreescribir("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado);
+					Sobreescribir("Registros.txt", Nombre, p.getMedallas(), Atrapados, Estado);
 					p.setGuardar(true);
 					GuardarCaptura = true;
 					NuevoUsuario = false;
 				}
-				if (NombreIngresado != null && NombreIngresado != " ") {
+				if (nombre != null && nombre != "") {
 					if (mostrado == false) {
 						mostrado = true;
 						System.out.println();
-						System.out.println("Bienvenido " + NombreIngresado + "!!");
+						System.out.println("Bienvenido " + nombre + "!!");
 					}
 					System.out.println();
-					System.out.println(NombreIngresado + ", que deseas hacer");
+					System.out.println(nombre + ", que deseas hacer");
 					System.out.println();
 					System.out.println("1) Revisar equipo.");
 					System.out.println("2) Salir a capturar.");
@@ -150,6 +96,17 @@ public class Main {
 							}
 							break;
 						case 4: 
+							p.setPokemonEquipo(Equipador);
+							for (int e = 0; e < Equipador.size(); e++) {
+								if (EstadoEquipo.get(e).equals("Muerto")) {
+									Equipador.remove(e);
+								}
+							}
+							if (Equipador.size() <= 0) {
+								System.out.println();
+								System.out.println("No tienes Pokemon Vivos para Combatir");
+								break;
+							}
 							for (int e = 0; e <= 5; e++) {
 								p.setPokemonEquipo(Equipo);	
 							}
@@ -158,8 +115,15 @@ public class Main {
 							System.out.println();
 							int opcionBatalla = p.verRivales("Gimnasios.txt");
 							if (opcionBatalla >= 1) {
-								ArrayList<String> Equipador = p.getPokemonEquipo();
-								p.RetarGimnasio("Gimnasios.txt", Equipador, EstadoEquipo, NombreIngresado);
+								ResultadoBatalla = p.RetarGimnasio("Gimnasios.txt", Equipador, EstadoEquipo, nombre);
+							}
+							if (ResultadoBatalla != null) {
+							    String actuales = p.getMedallas();
+							    if (actuales == null || actuales.equals("0")) {
+							        p.setMedallas(ResultadoBatalla);
+							    } else {
+							        p.setMedallas(actuales + ";" + ResultadoBatalla);
+							    }
 							}
 							else if (opcionBatalla == 0 || opcionBatalla < 0) {
 								break;
@@ -178,29 +142,29 @@ public class Main {
 							System.out.println("Guardado");
 							System.out.println();
 							if (GuardarCaptura == true) {
-								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
+								GuardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
 								for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
 									AtrapadosObtenidos.remove(s);	
 								}
 								GuardarCaptura = false;
 							}
 							else {
-								Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado, false);				
+								Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);				
 							}
 							break;
 						case 8:
 							System.out.println();
-							System.out.println("Guardado y salir");
+							System.out.println("Nos vemos entrenador...");
 							System.out.println();
 							if (GuardarCaptura == true) {
-								GuardarCapturados("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
+								GuardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados,AtrapadosObtenidos, Estado,EstadoObtenidos, false);	
 								for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
 									AtrapadosObtenidos.remove(s);	
 								}
 								GuardarCaptura = false;
 							}
 							else {
-								Guardar("Registros.txt", NombreIngresado, p.getMedallas(), Atrapados, Estado, false);				
+								Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);				
 							}
 							break;
 						default:
@@ -214,6 +178,201 @@ public class Main {
 			}	
 		}
 	}
+	
+	public static ArrayList<String> ActualizarEstadoEquipo(String Archivo) {
+		String NombreIngresado = null;
+		int cont_lineas = 0;
+		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		ArrayList<String> Atrapados = new ArrayList<>();
+		ArrayList<String> Estado = new ArrayList<>();
+		ArrayList<String> Equipo = new ArrayList<>();
+		ArrayList<String> EstadoEquipo = new ArrayList<>();
+		try {
+			FileReader archivoConteo = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+				if (cont_lineas == 0) {
+					String[] datos = linea.split(";");
+					String Nombre = datos[0];
+					String Medalla = datos[1];
+					int Num_medalla = Integer.valueOf(Medalla);
+					if (Nombre != null && Nombre != " ") {
+						p.setNombre(Nombre);
+						NombreIngresado = Nombre;
+						p.setGuardar(false);
+					}
+					if (Num_medalla > 0) {
+						p.setMedallas(Medalla);
+					}
+				}
+				if (cont_lineas > 1) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				if (cont_lineas < 7 && cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Equipo.add(Pokemon);
+					EstadoEquipo.add(Estados);
+					p.setPokemonEquipo(Atrapados);
+				}
+				else if (cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				linea = leyendo.readLine();
+				cont_lineas++;
+			}
+			leyendo.close();
+			if (NombreIngresado != null) {
+				return EstadoEquipo;	
+			}
+		} catch (Exception e) {
+			System.out.println("Error de lectura" + e);
+		}
+		return null;
+	}
+	
+	public static ArrayList<String> ActualizarPokemonEquipo(String Archivo) {
+		String NombreIngresado = null;
+		int cont_lineas = 0;
+		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		ArrayList<String> Atrapados = new ArrayList<>();
+		ArrayList<String> Estado = new ArrayList<>();
+		ArrayList<String> Equipo = new ArrayList<>();
+		ArrayList<String> EstadoEquipo = new ArrayList<>();
+		try {
+			FileReader archivoConteo = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+				if (cont_lineas == 0) {
+					String[] datos = linea.split(";");
+					String Nombre = datos[0];
+					String Medalla = datos[1];
+					int Num_medalla = Integer.valueOf(Medalla);
+					if (Nombre != null && Nombre != " ") {
+						p.setNombre(Nombre);
+						NombreIngresado = Nombre;
+						p.setGuardar(false);
+					}
+					if (Num_medalla > 0) {
+						p.setMedallas(Medalla);
+					}
+				}
+				if (cont_lineas > 1) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				if (cont_lineas < 7 && cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Equipo.add(Pokemon);
+					EstadoEquipo.add(Estados);
+					p.setPokemonEquipo(Atrapados);
+				}
+				else if (cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				linea = leyendo.readLine();
+				cont_lineas++;
+			}
+			leyendo.close();
+			if (NombreIngresado != null) {
+				return Equipo;	
+			}
+		} catch (Exception e) {
+			System.out.println("Error de lectura" + e);
+		}
+		return null;
+	}
+	
+	public static String VerRegistrosNombre(String Archivo) {
+		String NombreIngresado = null;
+		boolean NuevoUsuario = true;
+		int cont_lineas = 0;
+		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		ArrayList<String> Atrapados = new ArrayList<>();
+		ArrayList<String> Estado = new ArrayList<>();
+		ArrayList<String> Equipo = new ArrayList<>();
+		ArrayList<String> EstadoEquipo = new ArrayList<>();
+		try {
+			FileReader archivoConteo = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+				if (cont_lineas == 0) {
+					String[] datos = linea.split(";");
+					String Nombre = datos[0];
+					String Medalla = datos[1];
+					int Num_medalla = Integer.valueOf(Medalla);
+					if (Nombre != null && Nombre != " ") {
+						NuevoUsuario = false;
+						p.setNombre(Nombre);
+						NombreIngresado = Nombre;
+						p.setGuardar(false);
+					}
+					if (Num_medalla > 0) {
+						p.setMedallas(Medalla);
+					}
+				}
+				if (cont_lineas > 1) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				if (cont_lineas < 7 && cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Equipo.add(Pokemon);
+					EstadoEquipo.add(Estados);
+					p.setPokemonEquipo(Atrapados);
+				}
+				else if (cont_lineas > 0) {
+					String[] partes = linea.split(";");
+					String Pokemon = partes[0];
+					String Estados = partes[1];
+					Atrapados.add(Pokemon);
+					Estado.add(Estados);
+				}
+				linea = leyendo.readLine();
+				cont_lineas++;
+			}
+			if (NombreIngresado == null) {
+				System.out.println();
+				System.out.println("No puedes continuar, no existe guardados, crea una nueva partida");
+				System.out.println();
+				return null;
+			}
+			leyendo.close();
+			if (NombreIngresado != null) {
+				return NombreIngresado;	
+			}
+		} catch (Exception e) {
+			System.out.println("Error de lectura" + e);
+		}
+		return null;
+	}
+	
 	public static String[] seleccionar(ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
 		String[] seleccionados = new String[5];
 		int LongitudAtrapados = PokemonAtrapados.size();
