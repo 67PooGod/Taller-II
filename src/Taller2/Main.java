@@ -145,13 +145,25 @@ public class Main {
 							break;
 						case 3:
 							p.VerPokemonAtrapados(Atrapados);
+							for (int e = 0; e < 5; e++) {
+								p.setPokemonEquipo(Equipo);
+							}
 							break;
 						case 4: 
 							for (int e = 0; e <= 5; e++) {
 								p.setPokemonEquipo(Equipo);	
 							}
-							ArrayList<String> Equipador = p.getPokemonEquipo();
-							p.RetarGimnasio("Gimnasios.txt", Equipador, EstadoEquipo);
+							System.out.println();
+							System.out.println("A cual Lider deseas retar??");
+							System.out.println();
+							int opcionBatalla = p.verRivales("Gimnasios.txt");
+							if (opcionBatalla >= 1) {
+								ArrayList<String> Equipador = p.getPokemonEquipo();
+								p.RetarGimnasio("Gimnasios.txt", Equipador, EstadoEquipo, NombreIngresado);
+							}
+							else if (opcionBatalla == 0 || opcionBatalla < 0) {
+								break;
+							}
 							break;
 						case 5: 
 							//desafio de alto mando
