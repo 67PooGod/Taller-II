@@ -317,7 +317,7 @@ public class Pokemon {
 				System.out.println("Desafiando a " + ListaRivales.get(Desicion - 1) + "!!");
 				return Desicion;
 			}
-			else if (Desicion > ContVictoria + 1 && Desicion < VariableMaxima) {
+			else if (Desicion > ContVictoria + 1 && Desicion <= VariableMaxima) {
 				System.out.println();
 				System.out.println("Calmado Entrenador!!! No puedes retar a " + ListaRivales.get(Desicion - 1) + " sin haber derrotado a los lideres anteriores!!");
 				return 0;
