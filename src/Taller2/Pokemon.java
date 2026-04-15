@@ -299,13 +299,75 @@ public class Pokemon {
 		return ResultadoFinal;
 	}
 	
+	public static int verRivales(String NombreArchivo) {
+		ArrayList<String> ListaRivales = new ArrayList<>();
+		ArrayList<String> ListaRivalesEstado = new ArrayList<>();
+		Scanner sc = new Scanner(System.in);
+		int Desicion = 0;
+		int ContVictoria = 0;
+		int VariableMaxima = 0;
+		try {
+			FileReader arch = new FileReader(NombreArchivo);
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+				String[] datos = linea.split(";");
+				String Nombre = datos[1];
+				String Estado = datos[2];
+				if (Estado.equals("Derrotado")) {
+					ContVictoria++;
+				}
+				ListaRivales.add(Nombre);
+				ListaRivalesEstado.add(Estado);
+				linea = leyendo.readLine();
+			}
+			leyendo.close();
+			for (int i = 0; i <= ListaRivales.size(); i++) {
+				if (i < ListaRivales.size()) {
+					System.out.println(i+1 + ") " + ListaRivales.get(i) + " - Estado: " + ListaRivalesEstado.get(i));
+				}
+				else {
+					VariableMaxima = i;
+					System.out.println(i+1 + ") " + "Volver al menu.");
+				}
+			}
+			System.out.println();
+			System.out.println("Ingrese una Opcion");
+			System.out.println();
+			Desicion = sc.nextInt();
+			sc.nextLine();
+			if (Desicion < VariableMaxima && Desicion <= ContVictoria + 1) {
+				System.out.println();
+				System.out.println("Desafiando a " + ListaRivales.get(Desicion - 1) + "!!");
+				return Desicion;
+			}
+			else if (Desicion > ContVictoria + 1 && Desicion < VariableMaxima) {
+				System.out.println();
+				System.out.println("Calmado Entrenador!!! No puedes retar a " + ListaRivales.get(Desicion - 1) + " sin haber derrotado a los lideres anteriores!!");
+				return 0;
+			}
+			else {
+				return 0;
+			}
+		} catch (Exception e) {
+			System.out.println("Error ver pokemon " + e);
+		}
+		return 0;
+	}
+	
 	//wip batallar gimnasio
 
-	public static void RetarGimnasio(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual) {
+	public static void RetarGimnasio(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual, String NombreUsuario) {
 		boolean batalla = true;
-		int contPelear = 0;
+		boolean MostrarEnemigo = true;
+		boolean MostrarJugador = true;
+		int actualJugador = 0;
+		int actualEnemigo = 0;
+		String EntrenadorRival = "";
 		double[][] TipoPelear = new double[17][17];
+		PokemonCombate C = new PokemonCombate(null, null, 0);
 		ArrayList<String> PokemonEnemigo = new ArrayList<>();
+		Scanner sc = new Scanner(System.in);
 		try {
 			while (batalla == true) {
 				FileReader arch = new FileReader("Gimnasios.txt");
@@ -313,55 +375,75 @@ public class Pokemon {
 				String linea = leyendo.readLine();
 				while ((linea) != null) {
 					String[] datos = linea.split(";");
-					String Entrenador = datos[0];
+					String Entrenador = datos[1];
 					String EstadoDerrotar = datos[2];
 					String cantPokemon = datos[3];
 					int EnteroCantPokemon = Integer.valueOf(cantPokemon);
-					contPelear = EnteroCantPokemon;
 					if (EstadoDerrotar.equals("Sin derrotar")) {
 						if (EnteroCantPokemon == 1) {
-							String Pokemon1 = datos[3];
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
 							PokemonEnemigo.add(Pokemon1);
 							break;
 						}
 						else if (EnteroCantPokemon == 2) {
-							String Pokemon1 = datos[3];
-							String Pokemon2 = datos[4];
-							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2);
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
+							String Pokemon2 = datos[5];
+							PokemonEnemigo.add(Pokemon1);
+							PokemonEnemigo.add(Pokemon2);
 							break;
 						}
 						else if (EnteroCantPokemon == 3) {
-							String Pokemon1 = datos[3];
-							String Pokemon2 = datos[4];
-							String Pokemon3 = datos[5];
-							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3);
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
+							String Pokemon2 = datos[5];
+							String Pokemon3 = datos[6];
+							PokemonEnemigo.add(Pokemon1);
+							PokemonEnemigo.add(Pokemon2);
+							PokemonEnemigo.add(Pokemon3);
 							break;
 						}
 						else if (EnteroCantPokemon == 4) {
-							String Pokemon1 = datos[3];
-							String Pokemon2 = datos[4];
-							String Pokemon3 = datos[5];
-							String Pokemon4 = datos[6];
-							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4);
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
+							String Pokemon2 = datos[5];
+							String Pokemon3 = datos[6];
+							String Pokemon4 = datos[7];
+							PokemonEnemigo.add(Pokemon1);
+							PokemonEnemigo.add(Pokemon2);
+							PokemonEnemigo.add(Pokemon3);
+							PokemonEnemigo.add(Pokemon4);
 							break;
 						}
 						else if (EnteroCantPokemon == 5) {
-							String Pokemon1 = datos[3];
-							String Pokemon2 = datos[4];
-							String Pokemon3 = datos[5];
-							String Pokemon4 = datos[6];
-							String Pokemon5 = datos[7];
-							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4 + "+" + Pokemon5);
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
+							String Pokemon2 = datos[5];
+							String Pokemon3 = datos[6];
+							String Pokemon4 = datos[7];
+							String Pokemon5 = datos[8];
+							PokemonEnemigo.add(Pokemon1);
+							PokemonEnemigo.add(Pokemon2);
+							PokemonEnemigo.add(Pokemon3);
+							PokemonEnemigo.add(Pokemon4);
+							PokemonEnemigo.add(Pokemon5);
 							break;
 						}
 						else if (EnteroCantPokemon == 6) {
-							String Pokemon1 = datos[3];
-							String Pokemon2 = datos[4];
-							String Pokemon3 = datos[5];
-							String Pokemon4 = datos[6];
-							String Pokemon5 = datos[7];
-							String Pokemon6 = datos[8];
-							PokemonEnemigo.add(Pokemon1 + "+" + Pokemon2 + "+" + Pokemon3 + "+" + Pokemon4 + "+" + Pokemon5 + "+" + Pokemon6);
+							EntrenadorRival = Entrenador;
+							String Pokemon1 = datos[4];
+							String Pokemon2 = datos[5];
+							String Pokemon3 = datos[6];
+							String Pokemon4 = datos[7];
+							String Pokemon5 = datos[8];
+							String Pokemon6 = datos[9];
+							PokemonEnemigo.add(Pokemon1);
+							PokemonEnemigo.add(Pokemon2);
+							PokemonEnemigo.add(Pokemon3);
+							PokemonEnemigo.add(Pokemon4);
+							PokemonEnemigo.add(Pokemon5);
+							PokemonEnemigo.add(Pokemon6);
 							break;
 						}	
 					}
@@ -371,9 +453,66 @@ public class Pokemon {
 				ArrayList<String> tiposEnemigo = verTipoPokemon(PokemonEnemigo);
 				ArrayList<Integer> PuntosJugador = verStatsPokemon(PokemonEquipo);
 				ArrayList<Integer> PuntosEnemigo = verStatsPokemon(PokemonEnemigo);
-				System.out.println(PuntosJugador);
-				System.out.println(PokemonEquipo);
-				break;
+				PokemonCombate jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+				PokemonCombate enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
+				if (MostrarEnemigo == true) {
+					MostrarEnemigo = false;
+					System.out.println();
+					System.out.println(EntrenadorRival + " saca a " + PokemonEnemigo.get(actualEnemigo));
+				}
+				System.out.println();
+				if (MostrarJugador == true) {
+					MostrarJugador = false;
+					System.out.println(NombreUsuario + " saca a " + PokemonEquipo.get(actualJugador));
+					System.out.println();
+				}
+				System.out.println("Que deseas hacer?");
+				System.out.println("1) Atacar");
+				System.out.println("2) Cambiar de pokemon");
+				System.out.println("3) Rendirse");
+				int OpcionCombate = sc.nextInt();
+				sc.nextLine();
+				while (OpcionCombate == 1) {
+					while (actualJugador < PokemonEquipo.size() && actualEnemigo < PokemonEnemigo.size()) {
+					    combatir(jugador, enemigo);
+					    if (jugador.puntos <= 0) {
+					    	MostrarJugador = true;
+					        actualJugador++;
+					        if (actualJugador < PokemonEquipo.size()) {
+					            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+					        }
+					    }
+					    if (enemigo.puntos <= 0) {
+					    	MostrarEnemigo = true;
+					        actualEnemigo++;
+					        if (actualEnemigo < PokemonEnemigo.size()) {
+					            enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
+					        }
+					    }
+					    break;
+					}	
+					break;
+				}
+				if (OpcionCombate == 2) {
+					System.out.println();
+					System.out.println("Escoje un Pokemon de su equipo a cambiar");
+					System.out.println();
+					for (int f = 0; f < PokemonEquipo.size(); f++) {
+						if (f == 0) {
+							System.out.println(f +") " + "volver");	
+						}
+						System.out.println(f+1 +") " + PokemonEquipo.get(f));	
+					}
+					int OpcionCambio = sc.nextInt();
+					sc.nextLine();
+					if (OpcionCambio >= 0 && OpcionCambio <= 6) {
+						
+					}
+				}
+				if (OpcionCombate == 3) {
+					batalla = false;
+					break;
+				}
 			}
 		} catch (Exception e) {
 			System.out.println("Error batallar gimnasio " + e);
@@ -382,7 +521,7 @@ public class Pokemon {
 	
 	//wip ver tipo del pokemon combatiente
 	
-	public static ArrayList<String> verTipoPokemon(ArrayList<String> PokemonSeleccionado) {
+	public static ArrayList<String> verTipoPokemon(ArrayList<String> PokemonEquipo) {
 		ArrayList<String> Tipos = new ArrayList<>();
 		try {
 			FileReader arch = new FileReader("Pokedex.txt");
@@ -392,8 +531,8 @@ public class Pokemon {
 				String[] datos = linea.split(";");
 				String Pokemon = datos[0];
 				String tipo = datos[9];
-				for (int p = 0; p < PokemonSeleccionado.size(); p++) {
-					if (Pokemon.equals(PokemonSeleccionado.get(p))) {
+				for (int p = 0; p < PokemonEquipo.size(); p++) {
+					if (Pokemon.equals(PokemonEquipo.get(p))) {
 						Tipos.add(tipo);
 					}
 				}
@@ -407,7 +546,7 @@ public class Pokemon {
 	
 	//wip ver stats totales del pokemon
 	
-	public static ArrayList<Integer> verStatsPokemon(ArrayList<String> PokemonSeleccionado) {
+	public static ArrayList<Integer> verStatsPokemon(ArrayList<String> PokemonEquipo) {
 		ArrayList <Integer> Stats = new ArrayList<>();
 		int sumador = 0;
 		try {
@@ -417,8 +556,8 @@ public class Pokemon {
 			while ((linea) != null) {
 				String[] datos = linea.split(";");
 				String Pokemon = datos[0];
-				for (int p = 0; p < PokemonSeleccionado.size(); p++) {
-					if (Pokemon.equals(PokemonSeleccionado.get(p))) {
+				for (int p = 0; p < PokemonEquipo.size(); p++) {
+					if (Pokemon.equals(PokemonEquipo.get(p))) {
 						String vida = datos[3];
 						String ataque = datos[4];
 						String defensa = datos[5];
@@ -433,15 +572,84 @@ public class Pokemon {
 						int velocidad_int = Integer.valueOf(velocidad);
 						sumador = vida_int + ataque_int + defensa_int + ataqueEspecial_int + defensaEspecial_int + velocidad_int;
 						Stats.add(sumador);
+						sumador = 0;
 					}
 				}
-				sumador = 0;
 				linea = leyendo.readLine();
 			}
 		} catch (Exception e) {
 			System.out.println("Error ver tipo Pokemon " + e);
 		}
 		return Stats;
+	}
+	
+	public static int tipoIndex(String tipo) {
+	    switch (tipo) {
+	        case "Normal": return 0;
+	        case "Fuego": return 1;
+	        case "Agua": return 2;
+	        case "Planta": return 3;
+	        case "Electrico": return 4;
+	        case "Hielo": return 5;
+	        case "Lucha": return 6;
+	        case "Veneno": return 7;
+	        case "Tierra": return 8;
+	        case "Volador": return 9;
+	        case "Psiquico": return 10;
+	        case "Bicho": return 11;
+	        case "Roca": return 12;
+	        case "Fantasma": return 13;
+	        case "Dragon": return 14;
+	        case "Acero": return 15;
+	        case "Siniestro": return 16;
+	        case "Hada": return 17;
+	    }
+	    return 0;
+	}
+	
+	public static double getEfectividad(String tipoAtaque, String tipoDefensa) {
+	    int atk = tipoIndex(tipoAtaque);
+	    int def = tipoIndex(tipoDefensa);
+	    return EFECTIVIDAD[atk][def];
+	}
+	
+	public static void atacar(PokemonCombate atacante, PokemonCombate defensor) {
+	    double efectividad = getEfectividad(atacante.getTipo(), defensor.getTipo());
+	    int dañoBase = atacante.getPuntos();
+	    int dañoFinal = (int)(dañoBase * efectividad);
+	    if (dañoFinal < 1 && efectividad > 0) {
+	        dañoFinal = 1;
+	    }
+	    defensor.setPuntos(defensor.getPuntos() - dañoFinal);
+	    if (efectividad == 0) {
+	        System.out.println(atacante.getNombre() + " no afecta a " + defensor.getNombre());
+	    } else if (efectividad > 1) {
+	        System.out.println(atacante.getNombre() + " es supereficaz contra " + defensor.getNombre());
+	    } else if (efectividad < 1) {
+	        System.out.println(atacante.getNombre() + " no es muy efectivo contra" + defensor.getNombre());
+	    }
+	}
+	
+	public static void combatir(PokemonCombate p1, PokemonCombate p2) {
+		boolean MostradoNormal = true;
+		boolean MostradoDespues = false;
+	    if (p1.puntos > 0 && p2.puntos > 0) {
+	    	if (MostradoNormal == true) {
+	    		System.out.println(p1.nombre + " -> " + p1.puntos + " Puntos");
+	        	System.out.println(p2.nombre + " -> " + p2.puntos + " Puntos");
+	    	}
+	    }
+	    if (p1.getPuntos() > 0) {
+		    atacar(p1, p2);	
+	    }
+	    if (p2.getPuntos() > 0) {
+	        atacar(p2, p1);
+	    }
+	    if (p1.puntos > 0) {
+	        System.out.println(p1.nombre + " gana!");
+	    } else {
+	        System.out.println(p2.nombre + " gana!");
+	    }
 	}
 	
 	public static double[][] getEFECTIVIDAD() {
