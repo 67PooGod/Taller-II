@@ -136,6 +136,7 @@ public class Pokemon {
 			double acumulado = 0;
 			boolean capturado = false;
 			double prob = azar.nextDouble();
+			int opcion = 0;
 			try {
 				FileReader arch = new FileReader("Pokedex.txt");
 				BufferedReader leyendo = new BufferedReader(arch);
@@ -156,7 +157,7 @@ public class Pokemon {
 							System.out.println();
 							System.out.println("1) Capturar");
 							System.out.println("2) Huir");
-							int opcion = sc.nextInt();
+							opcion = sc.nextInt();
 							sc.nextLine();
 							while (opcion == 1) {
 								if (opcion == 1) {
@@ -183,7 +184,7 @@ public class Pokemon {
 									}
 								}
 							}
-							if (opcion == 2) {
+							if (opcion >= 2 || opcion < 1) {
 								break;
 							}
 						}
@@ -333,7 +334,7 @@ public class Pokemon {
 	
 	//wip batallar gimnasio
 
-	public static String RetarGimnasio(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual, String NombreUsuario) {
+	public static ArrayList<String> RetarGimnasio(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual, String NombreUsuario) {
 		boolean batalla = true;
 		boolean MostrarEnemigo = true;
 		boolean MostrarJugador = true;
@@ -344,12 +345,23 @@ public class Pokemon {
 		boolean MuertoJugador = false;
 		boolean Leido = false;
 		boolean MuertoEnemigo = false;
-		String EntrenadorRival = "";
 		double[][] TipoPelear = new double[17][17];
-		PokemonCombate C = new PokemonCombate(null, null, 0);
+		ArrayList<String> EntrenadorRival = new ArrayList<>();
 		ArrayList<String> PokemonEnemigo = new ArrayList<>();
+		PokemonCombate C = new PokemonCombate(null, null, 0);
 		Scanner sc = new Scanner(System.in);
+		for (int m = 0; m < PokemonEquipo.size(); m++) {
+			if (EstadoActual.get(m).equals("Muerto")) {
+				PokemonEquipo.remove(m);
+			}
+		}
 		try {
+			if (PokemonEquipo.size() <= 0) {
+				batalla = false;
+				System.out.println();
+				System.out.println("Estan todos Muertos!");
+				System.out.println("Volviendo al menu...");
+			}
 			while (batalla == true) {
 				FileReader arch = new FileReader("Gimnasios.txt");
 				BufferedReader leyendo = new BufferedReader(arch);
@@ -362,14 +374,14 @@ public class Pokemon {
 					int EnteroCantPokemon = Integer.valueOf(cantPokemon);
 					if (EstadoDerrotar.equals("Sin derrotar")) {
 						if (EnteroCantPokemon == 1) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							PokemonEnemigo.add(Pokemon1);
 							Leido = true;
 							break;
 						}
 						else if (EnteroCantPokemon == 2) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							String Pokemon2 = datos[5];
 							PokemonEnemigo.add(Pokemon1);
@@ -378,7 +390,7 @@ public class Pokemon {
 							break;
 						}
 						else if (EnteroCantPokemon == 3) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							String Pokemon2 = datos[5];
 							String Pokemon3 = datos[6];
@@ -389,7 +401,7 @@ public class Pokemon {
 							break;
 						}
 						else if (EnteroCantPokemon == 4) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							String Pokemon2 = datos[5];
 							String Pokemon3 = datos[6];
@@ -402,7 +414,7 @@ public class Pokemon {
 							break;
 						}
 						else if (EnteroCantPokemon == 5) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							String Pokemon2 = datos[5];
 							String Pokemon3 = datos[6];
@@ -417,7 +429,7 @@ public class Pokemon {
 							break;
 						}
 						else if (EnteroCantPokemon == 6) {
-							EntrenadorRival = Entrenador;
+							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
 							String Pokemon2 = datos[5];
 							String Pokemon3 = datos[6];
@@ -436,6 +448,8 @@ public class Pokemon {
 					}
 					linea = leyendo.readLine();
 				}
+				PokemonCombate jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+				PokemonCombate enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
 				ArrayList<String> tiposJugador = verTipoPokemon(PokemonEquipo);
 				ArrayList<String> tiposEnemigo = verTipoPokemon(PokemonEnemigo);
 				ArrayList<Integer> PuntosJugador = verStatsPokemon(PokemonEquipo);
@@ -448,12 +462,10 @@ public class Pokemon {
 					actualEnemigo = actualEnemigo - 1;
 					MuertoEnemigo = false;
 				}
-				PokemonCombate jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
-				PokemonCombate enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
 				if (MostrarEnemigo == true) {
 					MostrarEnemigo = false;
 					System.out.println();
-					System.out.println(EntrenadorRival + " saca a " + PokemonEnemigo.get(actualEnemigo));
+					System.out.println(EntrenadorRival.get(0) + " saca a " + PokemonEnemigo.get(actualEnemigo));
 				}
 				System.out.println();
 				if (MostrarJugador == true) {
@@ -479,6 +491,29 @@ public class Pokemon {
 					}
 					while (actualJugador < PokemonEquipo.size() && actualEnemigo < PokemonEnemigo.size()) {
 					    combatir(jugador, enemigo);
+					    if (Cambio == true) {
+					    	Cambio = false;
+					    }
+					    if (jugador.nombre.equals(enemigo.nombre)) {
+					    	MostrarJugador = true;
+					    	MuertoJugador = true;
+					    	MostrarEnemigo = true;
+					    	PokemonEnemigo.remove(actualEnemigo);
+					        PokemonEquipo.remove(actualJugador);
+					        AñadirMuertos("Registros.txt", actualJugador + 1, "Muerto");
+					        actualJugador++;
+					        if (actualJugador < PokemonEquipo.size()) {
+					            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+					        }
+					        else if (actualJugador > PokemonEquipo.size()){
+								System.out.println();
+								System.out.println("Todos sus Pokemon a sido debilidatos " + NombreUsuario);
+								System.out.println("Volviendo al menu...");
+								OpcionCombate = 3;
+								return null;
+					        }
+					        break;
+					    }
 					    if (jugador.puntos <= 0) {
 					    	MostrarJugador = true;
 					    	MuertoJugador = true;
@@ -499,23 +534,21 @@ public class Pokemon {
 					    }
 					    if (enemigo.puntos <= 0) {
 					    	MostrarEnemigo = true;
-					    	MuertoEnemigo = true;
-					        PokemonEnemigo.remove(actualEnemigo);
-					        actualEnemigo++;
+					    	PokemonEnemigo.remove(actualEnemigo);
+					    	if (PokemonEnemigo.size() == 0) {
+					    	    System.out.println();
+					    	    System.out.println("Ganaste contra " + EntrenadorRival.get(0));
+					    	    System.out.println("Volviendo al menu...");
+					    	    Derrotado("Gimnasios.txt", EntrenadorRival.get(0));
+					    	    return EntrenadorRival;
+					    	}
 					        if (actualEnemigo < PokemonEnemigo.size()) {
 					            enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
-					        }
-					        else if (actualEnemigo > PokemonEnemigo.size()){
-								System.out.println();
-								System.out.println("Ganaste contra " + EntrenadorRival);
-								System.out.println("Volviendo al menu...");
-								Derrotado("Gimnasios.txt", EntrenadorRival);
-								OpcionCombate = 3;
-								return EntrenadorRival;
 					        }
 					        break;
 					    }
 					    atacar(jugador, enemigo);
+					    break;
 					}	
 					break;
 				}
@@ -531,13 +564,17 @@ public class Pokemon {
 					}
 					int OpcionCambio = sc.nextInt();
 					sc.nextLine();
-					System.out.println(NombreUsuario + " saca del combate a " + PokemonEquipo.get(actualJugador));
-					System.out.println();
-					if (OpcionCambio >= 1 && OpcionCambio <= 6) {
+					if (OpcionCambio >= 1 && OpcionCambio <= 6 && OpcionCambio != actualJugador) {
 						Cambio = true;
+						System.out.println(NombreUsuario + " saca del combate a " + PokemonEquipo.get(actualJugador));
+						System.out.println();
 						actualJugador = OpcionCambio - 1;
 						System.out.println(NombreUsuario + " cambia a " + PokemonEquipo.get(actualJugador));
 						OpcionCombate = 1;
+					}
+					else if (OpcionCambio != 0 && OpcionCambio > 6 && OpcionCambio < 0){
+						System.out.println();
+						System.out.println("Cambio Invalido, escoje una opcion del pokemon!");
 					}
 				}
 				if (OpcionCombate == 3) {
@@ -653,12 +690,15 @@ public class Pokemon {
 	        dañoFinal = 1;
 	    }
 	    defensor.setPuntos(defensor.getPuntos() - dañoFinal);
+	    if (atacante.getTipo().equals(defensor.getTipo()) && atacante.getNombre().equals(defensor.getNombre())) {
+	        return;
+	    }
 	    if (efectividad == 0) {
 	        System.out.println(atacante.getNombre() + " no afecta a " + defensor.getNombre());
 	    } else if (efectividad > 1) {
 	        System.out.println(atacante.getNombre() + " es supereficaz contra " + defensor.getNombre());
 	    } else if (efectividad < 1) {
-	        System.out.println(atacante.getNombre() + " no es muy efectivo contra" + defensor.getNombre());
+	        System.out.println(atacante.getNombre() + " no es muy efectivo contra " + defensor.getNombre());
 	    }
 	}
 	
@@ -700,23 +740,23 @@ public class Pokemon {
 	}
 	
 	public static void combatir(PokemonCombate p1, PokemonCombate p2) {
-		boolean MostradoNormal = true;
-		boolean MostradoDespues = false;
-	    if (p1.puntos > 0 && p2.puntos > 0) {
-	    	if (MostradoNormal == true) {
-	    		System.out.println(p1.nombre + " -> " + p1.puntos + " Puntos");
-	        	System.out.println(p2.nombre + " -> " + p2.puntos + " Puntos");
+	    System.out.println(p1.nombre + " -> " + p1.puntos + " Puntos");
+	    System.out.println(p2.nombre + " -> " + p2.puntos + " Puntos");
+	    while (p1.puntos > 0 && p2.puntos > 0) {
+	        atacar(p1, p2);
+	        atacar(p2, p1);
+	        if (p2.puntos <= 0 || p1.puntos <= 0) {
+	        	break;
 	    	}
 	    }
-	    if (p1.getPuntos() > 0) {
-		    atacar(p1, p2);	
+	    if (p1.getTipo().equals(p2.getTipo()) && p1.getNombre().equals(p2.getNombre())) {
+	        System.out.println("¡Ambos Pokémon se debilitaron!");
+	        return;
 	    }
-	    if (p2.getPuntos() > 0) {
-	        atacar(p2, p1);
-	    }
-	    if (p1.puntos > 0) {
+	    else if (p1.puntos > 0) {
 	        System.out.println(p1.nombre + " gana!");
-	    } else {
+	    }
+	    else if (p2.puntos > 0) {
 	        System.out.println(p2.nombre + " gana!");
 	    }
 	}
