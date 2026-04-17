@@ -18,13 +18,16 @@ public class Main {
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
-		String ResultadoBatalla = null;
+		ArrayList<String> EstadoEquipo = new ArrayList<>();
+		ArrayList<String> Equipador = new ArrayList<>();
+		ArrayList<String> ResultadoBatalla = null;
 		boolean salir = false;
 		boolean mostrado = false;
 		boolean NuevoUsuario = true;
 		boolean GuardarCaptura = false;
+		int AltoMando = 0;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "none", "Vivo", null);
 		Scanner sc = new Scanner(System.in);
 		while (salir == false) {
 			System.out.println("1) Continuar");
@@ -34,13 +37,21 @@ public class Main {
 			sc.nextLine();
 			while (opcion == 1) {
 				nombre = VerRegistrosNombre("Registros.txt");
-				opcion = 2;
+				if (nombre != null) {
+					NuevoUsuario = false;
+					opcion = 2;
+				}
+				if (nombre == null) {
+					break;
+				}
 			}
 			while (opcion == 2) {
-				nombre = VerRegistrosNombre("Registros.txt");
-				ArrayList<String> Equipador = ActualizarPokemonEquipo("Registros.txt");
-				ArrayList<String> EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");
-				if (NuevoUsuario == true && nombre == null) {
+				if (NuevoUsuario == false) {
+					nombre = VerRegistrosNombre("Registros.txt");
+					Equipador = ActualizarPokemonEquipo("Registros.txt");
+					EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");	
+				}
+				if (NuevoUsuario == true || nombre == null) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					Sobreescribir("Registros.txt", Nombre, p.getMedallas(), Atrapados, Estado);
@@ -119,19 +130,16 @@ public class Main {
 							}
 							if (ResultadoBatalla != null) {
 							    String actuales = p.getMedallas();
-							    if (actuales == null || actuales.equals("0")) {
-							        p.setMedallas(ResultadoBatalla);
-							    } else {
-							        p.setMedallas(actuales + ";" + ResultadoBatalla);
-							    }
+							    guardarMedallas("Registros.txt", ResultadoBatalla);
 							}
 							else if (opcionBatalla == 0 || opcionBatalla < 0) {
 								break;
 							}
 							break;
 						case 5: 
-							//desafio de alto mando
-							//Marcelo
+							System.out.println();
+							System.out.println("¿Estas Completamente seguro de Luchar Contra el Alto Mando?");
+							System.out.println();
 							break;
 						case 6:
 							//curar
@@ -172,17 +180,22 @@ public class Main {
 							System.out.println("Opcion invalida, escoje de nuevo");
 					}
 					if (opcion2 == 8) {
+						nombre = null;
+						NuevoUsuario = true;
 						break;
 					}
 				}
 			}	
+			if (opcion > 2 || opcion <= 0) {
+				break;
+			}
 		}
 	}
 	
 	public static ArrayList<String> ActualizarEstadoEquipo(String Archivo) {
 		String NombreIngresado = null;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "none", "Vivo", null);
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
@@ -196,14 +209,10 @@ public class Main {
 					String[] datos = linea.split(";");
 					String Nombre = datos[0];
 					String Medalla = datos[1];
-					int Num_medalla = Integer.valueOf(Medalla);
 					if (Nombre != null && Nombre != " ") {
 						p.setNombre(Nombre);
 						NombreIngresado = Nombre;
 						p.setGuardar(false);
-					}
-					if (Num_medalla > 0) {
-						p.setMedallas(Medalla);
 					}
 				}
 				if (cont_lineas > 1) {
@@ -258,14 +267,10 @@ public class Main {
 					String[] datos = linea.split(";");
 					String Nombre = datos[0];
 					String Medalla = datos[1];
-					int Num_medalla = Integer.valueOf(Medalla);
 					if (Nombre != null && Nombre != " ") {
 						p.setNombre(Nombre);
 						NombreIngresado = Nombre;
 						p.setGuardar(false);
-					}
-					if (Num_medalla > 0) {
-						p.setMedallas(Medalla);
 					}
 				}
 				if (cont_lineas > 1) {
@@ -321,15 +326,11 @@ public class Main {
 					String[] datos = linea.split(";");
 					String Nombre = datos[0];
 					String Medalla = datos[1];
-					int Num_medalla = Integer.valueOf(Medalla);
 					if (Nombre != null && Nombre != " ") {
 						NuevoUsuario = false;
 						p.setNombre(Nombre);
 						NombreIngresado = Nombre;
 						p.setGuardar(false);
-					}
-					if (Num_medalla > 0) {
-						p.setMedallas(Medalla);
 					}
 				}
 				if (cont_lineas > 1) {
@@ -461,5 +462,76 @@ public class Main {
 				System.out.println("Error " + e);
 			}
 		}
+	}
+	public static void guardarMedallas(String archivo, ArrayList<String> nuevasMedallas) {
+	    ArrayList<String> lineas = new ArrayList<>();
+	    boolean existe = false;
+	    int sumador = 0;
+	    try {
+			FileReader archivoConteo = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+	            lineas.add(linea);
+	            linea = leyendo.readLine();
+	        }
+	        leyendo.close();
+	        if (lineas.size() > 0) {
+	            String[] datos = lineas.get(0).split(";");
+	            String nombre = datos[0];
+	            ArrayList<String> medallas = new ArrayList<>();
+	            if (datos.length > 1 && !datos[1].equals("") && !datos[1].equals("none")) {
+	                String[] existentes = datos[1].split(";");
+	                for (String m : existentes) {
+	                    medallas.add(m);
+	                }
+	            }
+	            for (String m : medallas) {
+	                if (m.equals(nuevasMedallas.get(sumador))) {
+	                	sumador++;
+	                    existe = true;
+	                    break;
+	                }
+	            }
+
+	            if (!existe) {
+	                medallas.add(nuevasMedallas.get(sumador));
+	                sumador++;
+	            }
+	            String resultado = "";
+	            for (int i = 0; i < medallas.size(); i++) {
+	                resultado += medallas.get(i);
+	                if (i < medallas.size() - 1) {
+	                    resultado += ";";
+	                }
+	            }
+	            lineas.set(0, nombre + ";" + resultado);
+	        }
+	        BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo));
+	        for (int i = 0; i < lineas.size(); i++) {
+	            escritor.write(lineas.get(i));
+	            if (i < lineas.size() - 1) {
+	                escritor.newLine();
+	            }
+	        }
+	        escritor.close();
+	    } catch (Exception e) {
+	        System.out.println("Error guardar medallas " + e);
+	    }
+	}
+	public static int VerificarMedallas(String Archivo) {
+		int Verificar = 0;
+	    try {
+			FileReader archivoConteo = new FileReader("Registros.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+	            Verificar++;
+	            linea = leyendo.readLine();
+	        }
+	    } catch (Exception e) {
+	        System.out.println("Error guardar medallas " + e);
+	    }
+		return Verificar;
 	}
 }
