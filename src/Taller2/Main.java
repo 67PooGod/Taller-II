@@ -139,8 +139,22 @@ public class Main {
 							break;
 						case 5: 
 							boolean puedeEntrar = VerificarMedallas("Registros.txt");
+							p.setPokemonEquipo(Equipador);
+							for (int e = Equipador.size() - 1; e >= 0; e--) {
+							    if (EstadoEquipo.get(e).equals("Muerto")) {
+							        Equipador.remove(e);
+							        EstadoEquipo.remove(e);
+							    }
+							}
+							if (Equipador.size() <= 0) {
+								System.out.println();
+								System.out.println("No tienes Pokemon Vivos para Combatir");
+								break;
+							}
+							p.setPokemonEquipo(Equipo);	
+							System.out.println();
 							if (puedeEntrar == true) {
-								boolean ResultadoAltoMando = p.batallarAltoMando("Registros.txt", Equipador, EstadoEquipo, nombre);
+								boolean ResultadoAltoMando = p.batallarAltoMando("Alto Mando.txt", Equipador, EstadoEquipo, nombre);
 							}
 							else {
 								System.out.println();
