@@ -14,13 +14,13 @@ public class Pokemon {
 	private String Nombre;
 	private boolean Guardar;
 	private String Medallas;
-	private String Estado;
+	private ArrayList<String> EstadoEquipo;
 	private ArrayList<String> PokemonEquipo;
-	public Pokemon(String Nombre, boolean Guardar, String Medallas, String Estado, ArrayList<String> PokemonEquipo) {
+	public Pokemon(String Nombre, boolean Guardar, String Medallas, ArrayList<String> EstadoEquipo, ArrayList<String> PokemonEquipo) {
 		this.Nombre = Nombre;
 		this.Guardar = Guardar;
 		this.Medallas = Medallas;
-		this.Estado = Estado;
+		this.EstadoEquipo = EstadoEquipo;
 		this.PokemonEquipo = PokemonEquipo;
 	}
 
@@ -45,16 +45,12 @@ public class Pokemon {
 		return Nombre;
 	}
 
-	public String getEstado() {
-		return Estado;
+	public ArrayList<String> getEstadoEquipo() {
+		return EstadoEquipo;
 	}
 
-	public String isEstado(String Estado) {
-		return this.Estado;
-	}
-	
-	public void setEstado(String Estado) {
-	    this.Estado = Estado;
+	public void setEstadoEquipo(ArrayList<String> estadoEquipo) {
+		EstadoEquipo = estadoEquipo;
 	}
 
 	public ArrayList<String> getPokemonEquipo() {
@@ -313,7 +309,7 @@ public class Pokemon {
 			System.out.println();
 			Desicion = sc.nextInt();
 			sc.nextLine();
-			if (Desicion < VariableMaxima && Desicion <= ContVictoria + 1 && ContVictoria+1 == Desicion) {
+			if (Desicion < VariableMaxima && Desicion <= ContVictoria + 1 && ContVictoria+1 == Desicion || ContVictoria == Desicion - 1) {
 				System.out.println();
 				System.out.println("Desafiando a " + ListaRivales.get(Desicion - 1) + "!!");
 				return Desicion;
@@ -345,16 +341,10 @@ public class Pokemon {
 		boolean MuertoJugador = false;
 		boolean Leido = false;
 		boolean MuertoEnemigo = false;
-		double[][] TipoPelear = new double[17][17];
 		ArrayList<String> EntrenadorRival = new ArrayList<>();
 		ArrayList<String> PokemonEnemigo = new ArrayList<>();
 		PokemonCombate C = new PokemonCombate(null, null, 0);
 		Scanner sc = new Scanner(System.in);
-		for (int m = 0; m < PokemonEquipo.size(); m++) {
-			if (EstadoActual.get(m).equals("Muerto")) {
-				PokemonEquipo.remove(m);
-			}
-		}
 		try {
 			if (PokemonEquipo.size() <= 0) {
 				batalla = false;
@@ -498,10 +488,11 @@ public class Pokemon {
 					    	MostrarJugador = true;
 					    	MuertoJugador = true;
 					    	MostrarEnemigo = true;
+					        AñadirMuertos("Registros.txt", PokemonEquipo.get(actualJugador), "Muerto");
 					    	PokemonEnemigo.remove(actualEnemigo);
 					        PokemonEquipo.remove(actualJugador);
-					        AñadirMuertos("Registros.txt", actualJugador + 1, "Muerto");
 					        actualJugador++;
+					        actualEnemigo++;
 					        if (actualJugador < PokemonEquipo.size()) {
 					            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
 					        }
@@ -517,13 +508,13 @@ public class Pokemon {
 					    if (jugador.puntos <= 0) {
 					    	MostrarJugador = true;
 					    	MuertoJugador = true;
+					        AñadirMuertos("Registros.txt", PokemonEquipo.get(actualJugador), "Muerto");
 					        PokemonEquipo.remove(actualJugador);
-					        AñadirMuertos("Registros.txt", actualJugador + 1, "Muerto");
 					        actualJugador++;
 					        if (actualJugador < PokemonEquipo.size()) {
 					            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
 					        }
-					        else if (actualJugador > PokemonEquipo.size()){
+					        else if (PokemonEquipo.size() == 0) {
 								System.out.println();
 								System.out.println("Todos sus Pokemon a sido debilidatos " + NombreUsuario);
 								System.out.println("Volviendo al menu...");
@@ -575,6 +566,7 @@ public class Pokemon {
 					else if (OpcionCambio != 0 && OpcionCambio > 6 && OpcionCambio < 0){
 						System.out.println();
 						System.out.println("Cambio Invalido, escoje una opcion del pokemon!");
+						break;
 					}
 				}
 				if (OpcionCombate == 3) {
@@ -702,10 +694,12 @@ public class Pokemon {
 	    }
 	}
 	
-	public static void AñadirMuertos(String Archivo, int IndicePokemon, String Texto) {
+	public static void AñadirMuertos(String Archivo, String NombrePokemon, String Texto) {
 		ArrayList<String> Resultado1 = new ArrayList<>();
 		ArrayList<String> Resultado2 = new ArrayList<>();
-		int cont_lineas = 0;
+		ArrayList<String> Nombres = new ArrayList<>();
+		ArrayList<String> Todo = new ArrayList<>();
+		int contLineas = 0;
 		try {
 			FileReader arch = new FileReader(Archivo);
 			BufferedReader leyendo = new BufferedReader(arch);
@@ -714,19 +708,31 @@ public class Pokemon {
 				String[] datos = linea.split(";");
 				String Parte1 = datos[0];
 				String Parte2 = datos[1];
-				Resultado1.add(Parte1);
-				Resultado2.add(Parte2);
-				cont_lineas ++;
+				if (contLineas > 0) {
+					Resultado1.add(Parte1);
+					Resultado2.add(Parte2);
+				}
+				else {
+					Nombres.add(Parte1);
+					Todo.add(linea);
+				}
+				contLineas ++;
 				linea = leyendo.readLine();
 			}
 			leyendo.close();
 			for (int m = 0; m < Resultado2.size(); m++) {
-				if (Resultado2.get(m).equals("Vivo")) {
-					Resultado2.set(IndicePokemon, Texto);
+				if (Resultado2.get(m).equals("Vivo") && Resultado1.get(m).equals(NombrePokemon)) {
+					Resultado2.set(m, Texto);
 				}
 			}
 			FileWriter archivoUsuarios = new FileWriter(Archivo);
 			BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+			for (int i = 0; i < Todo.size(); i++) {
+				escritorBuffer.write(Todo.get(i));
+				if (i < Resultado1.size() - 1) {
+					escritorBuffer.newLine();
+				}	
+			}
 			for (int i = 0; i < Resultado1.size(); i++) {
 				escritorBuffer.write(Resultado1.get(i) + ";" + Resultado2.get(i));
 				if (i < Resultado1.size() - 1) {
@@ -798,6 +804,11 @@ public class Pokemon {
 		} catch (Exception e) {
 			System.out.println("Error Cambiar a muerto " + e);
 		}
+	}
+	
+	public static boolean batallarAltoMando(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual, String NombreUsuario) {
+		boolean derrotarTodos = false;
+		return derrotarTodos;
 	}
 	
 	public static double[][] getEFECTIVIDAD() {
