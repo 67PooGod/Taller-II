@@ -27,7 +27,7 @@ public class Main {
 		boolean GuardarCaptura = false;
 		int AltoMando = 0;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "none", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "none", null , null);
 		Scanner sc = new Scanner(System.in);
 		while (salir == false) {
 			System.out.println("1) Continuar");
@@ -65,6 +65,7 @@ public class Main {
 						System.out.println();
 						System.out.println("Bienvenido " + nombre + "!!");
 					}
+					ResultadoBatalla = null;
 					System.out.println();
 					System.out.println(nombre + ", que deseas hacer");
 					System.out.println();
@@ -104,23 +105,23 @@ public class Main {
 							p.VerPokemonAtrapados(Atrapados);
 							for (int e = 0; e < 5; e++) {
 								p.setPokemonEquipo(Equipo);
+								p.setEstadoEquipo(EstadoEquipo);
 							}
 							break;
 						case 4: 
 							p.setPokemonEquipo(Equipador);
-							for (int e = 0; e < Equipador.size(); e++) {
-								if (EstadoEquipo.get(e).equals("Muerto")) {
-									Equipador.remove(e);
-								}
+							for (int e = Equipador.size() - 1; e >= 0; e--) {
+							    if (EstadoEquipo.get(e).equals("Muerto")) {
+							        Equipador.remove(e);
+							        EstadoEquipo.remove(e);
+							    }
 							}
 							if (Equipador.size() <= 0) {
 								System.out.println();
 								System.out.println("No tienes Pokemon Vivos para Combatir");
 								break;
 							}
-							for (int e = 0; e <= 5; e++) {
-								p.setPokemonEquipo(Equipo);	
-							}
+							p.setPokemonEquipo(Equipo);	
 							System.out.println();
 							System.out.println("A cual Lider deseas retar??");
 							System.out.println();
@@ -137,9 +138,14 @@ public class Main {
 							}
 							break;
 						case 5: 
-							System.out.println();
-							System.out.println("¿Estas Completamente seguro de Luchar Contra el Alto Mando?");
-							System.out.println();
+							boolean puedeEntrar = VerificarMedallas("Registros.txt");
+							if (puedeEntrar == true) {
+								boolean ResultadoAltoMando = p.batallarAltoMando("Registros.txt", Equipador, EstadoEquipo, nombre);
+							}
+							else {
+								System.out.println();
+								System.out.println("No puedes ingresar al Alto Mando, no tienes medallas suficientes");
+							}
 							break;
 						case 6:
 							//curar
@@ -193,9 +199,8 @@ public class Main {
 	}
 	
 	public static ArrayList<String> ActualizarEstadoEquipo(String Archivo) {
-		String NombreIngresado = null;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "none", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "none", null, null);
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
@@ -209,51 +214,36 @@ public class Main {
 					String[] datos = linea.split(";");
 					String Nombre = datos[0];
 					String Medalla = datos[1];
-					if (Nombre != null && Nombre != " ") {
-						p.setNombre(Nombre);
-						NombreIngresado = Nombre;
-						p.setGuardar(false);
-					}
 				}
-				if (cont_lineas > 1) {
+				if (cont_lineas >= 1) {
 					String[] partes = linea.split(";");
 					String Pokemon = partes[0];
 					String Estados = partes[1];
 					Atrapados.add(Pokemon);
 					Estado.add(Estados);
 				}
-				if (cont_lineas < 7 && cont_lineas > 0) {
+				if (cont_lineas < 7 && cont_lineas >= 1) {
 					String[] partes = linea.split(";");
 					String Pokemon = partes[0];
 					String Estados = partes[1];
 					Equipo.add(Pokemon);
 					EstadoEquipo.add(Estados);
 					p.setPokemonEquipo(Atrapados);
-				}
-				else if (cont_lineas > 0) {
-					String[] partes = linea.split(";");
-					String Pokemon = partes[0];
-					String Estados = partes[1];
-					Atrapados.add(Pokemon);
-					Estado.add(Estados);
+					p.setEstadoEquipo(EstadoEquipo);
 				}
 				linea = leyendo.readLine();
 				cont_lineas++;
 			}
 			leyendo.close();
-			if (NombreIngresado != null) {
-				return EstadoEquipo;	
-			}
+			return EstadoEquipo;	
 		} catch (Exception e) {
 			System.out.println("Error de lectura" + e);
 		}
 		return null;
 	}
-	
 	public static ArrayList<String> ActualizarPokemonEquipo(String Archivo) {
-		String NombreIngresado = null;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "0", null, null);
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
@@ -267,11 +257,6 @@ public class Main {
 					String[] datos = linea.split(";");
 					String Nombre = datos[0];
 					String Medalla = datos[1];
-					if (Nombre != null && Nombre != " ") {
-						p.setNombre(Nombre);
-						NombreIngresado = Nombre;
-						p.setGuardar(false);
-					}
 				}
 				if (cont_lineas > 1) {
 					String[] partes = linea.split(";");
@@ -299,9 +284,7 @@ public class Main {
 				cont_lineas++;
 			}
 			leyendo.close();
-			if (NombreIngresado != null) {
-				return Equipo;	
-			}
+			return Equipo;
 		} catch (Exception e) {
 			System.out.println("Error de lectura" + e);
 		}
@@ -312,7 +295,7 @@ public class Main {
 		String NombreIngresado = null;
 		boolean NuevoUsuario = true;
 		int cont_lineas = 0;
-		Pokemon p = new Pokemon(null, false, "0", "Vivo", null);
+		Pokemon p = new Pokemon(null, false, "0", null, null);
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
@@ -372,17 +355,6 @@ public class Main {
 			System.out.println("Error de lectura" + e);
 		}
 		return null;
-	}
-	
-	public static String[] seleccionar(ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
-		String[] seleccionados = new String[5];
-		int LongitudAtrapados = PokemonAtrapados.size();
-		for (int i = 0; i < LongitudAtrapados; i++) {
-			if (PokemonAtrapados.get(i) != null) {
-				
-			}
-		}
-		return seleccionados;
 	}
 	public static void Sobreescribir(String archivo, String Nombre, String Medallas, ArrayList<String> PokemonAtrapados, ArrayList<String> Estado) {
 		try {
@@ -481,9 +453,8 @@ public class Main {
 	            String nombre = datos[0];
 	            ArrayList<String> medallas = new ArrayList<>();
 	            if (datos.length > 1 && !datos[1].equals("") && !datos[1].equals("none")) {
-	                String[] existentes = datos[1].split(";");
-	                for (String m : existentes) {
-	                    medallas.add(m);
+	                for (int i = 1; i < datos.length; i++) {
+	                    medallas.add(datos[i]);
 	                }
 	            }
 	            for (String m : medallas) {
@@ -519,19 +490,50 @@ public class Main {
 	        System.out.println("Error guardar medallas " + e);
 	    }
 	}
-	public static int VerificarMedallas(String Archivo) {
+	public static int cantLineasRival(String Archivo) {
+		int Verificar = 0;
+	    try {
+			FileReader archivoConteo = new FileReader("Gimnasios.txt");
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+	            linea = leyendo.readLine();
+				Verificar++;
+	        }
+	    } catch (Exception e) {
+	        System.out.println("Error guardar medallas " + e);
+	    }
+		return Verificar;
+	}
+	public static boolean VerificarMedallas(String Archivo) {
+		boolean resultado = false;
+		boolean Verificado = false;
 		int Verificar = 0;
 	    try {
 			FileReader archivoConteo = new FileReader("Registros.txt");
 			BufferedReader leyendo = new BufferedReader(archivoConteo);
 			String linea = leyendo.readLine();
 			while (linea != null) {
-	            Verificar++;
+				String datos[] = linea.split(";");
+				if (datos[0] == null || datos[1].equals("none")) {
+					Verificar = 0;
+					return resultado;
+				}
+				int Maximo = datos.length;
+				if (Verificado == false) {
+					while (Verificar < Maximo) {
+						Verificar++;
+					}
+					Verificado = true;
+				}
 	            linea = leyendo.readLine();
 	        }
+			if (Verificar - 1 == cantLineasRival("Registros.txt")) {
+				return true;
+			}
 	    } catch (Exception e) {
 	        System.out.println("Error guardar medallas " + e);
 	    }
-		return Verificar;
+		return resultado;
 	}
 }
