@@ -806,8 +806,184 @@ public class Pokemon {
 		}
 	}
 	
+	
+	
 	public static boolean batallarAltoMando(String archivo, ArrayList<String> PokemonEquipo, ArrayList<String> EstadoActual, String NombreUsuario) {
 		boolean derrotarTodos = false;
+		boolean batalla = true;
+		boolean RivalDerrotado = true;
+		boolean MostrarEnemigo = true;
+		boolean MostrarJugador = true;
+		boolean Cambio = false;
+		int actualJugador = 0;
+		int actualEnemigo = 0;
+		int opcionCombate = 0;
+		boolean MuertoJugador = false;
+		boolean Leido = false;
+		boolean MuertoEnemigo = false;
+		String entrenador = "";
+		ArrayList<String[]> rivales = new ArrayList<>();
+		ArrayList<String> PokemonEnemigo = new ArrayList<>();
+		PokemonCombate C = new PokemonCombate(null, null, 0);
+		Scanner sc = new Scanner(System.in);
+		try {
+			if (PokemonEquipo.size() <= 0) {
+				batalla = false;
+				System.out.println();
+				System.out.println("Estan todos Muertos!");
+				System.out.println("Volviendo al menu...");
+			}
+			FileReader arch = new FileReader(archivo);
+			BufferedReader leyendo = new BufferedReader(arch);
+			String linea = leyendo.readLine();
+			while ((linea) != null) {
+			    String[] datos = linea.split(";");
+			    rivales.add(datos);
+				linea = leyendo.readLine();
+			}
+			for (int i = 0; i < rivales.size(); i++) {
+			    String[] datos = rivales.get(i);
+			    entrenador = datos[1];
+			    for (int j = 2; j <= 7; j++) {
+			        PokemonEnemigo.add(datos[j]);
+			    }
+			    System.out.println("Desafiando a " + entrenador + "!!");
+			    actualJugador = 0;
+			    actualEnemigo = 0;
+			    while (PokemonEquipo.size() > 0 && PokemonEnemigo.size() > 0) {
+					PokemonCombate jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+					PokemonCombate enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
+					ArrayList<String> tiposJugador = verTipoPokemon(PokemonEquipo);
+					ArrayList<String> tiposEnemigo = verTipoPokemon(PokemonEnemigo);
+					ArrayList<Integer> PuntosJugador = verStatsPokemon(PokemonEquipo);
+					ArrayList<Integer> PuntosEnemigo = verStatsPokemon(PokemonEnemigo);
+					if (MuertoJugador == true) {
+						actualJugador = actualJugador - 1;
+						MuertoJugador = false;
+					}
+					if (MuertoEnemigo == true) {
+						actualEnemigo = actualEnemigo - 1;
+						MuertoEnemigo = false;
+					}
+					if (MostrarEnemigo == true) {
+						MostrarEnemigo = false;
+						System.out.println();
+						System.out.println(entrenador + " saca a " + PokemonEnemigo.get(actualEnemigo));
+					}
+					System.out.println();
+					if (MostrarJugador == true) {
+						MostrarJugador = false;
+						System.out.println(NombreUsuario + " saca a " + PokemonEquipo.get(actualJugador));
+						System.out.println();
+					}
+					if (Cambio == false) {
+						System.out.println("Que deseas hacer?");
+						System.out.println("1) Atacar");
+						System.out.println("2) Cambiar de pokemon");
+						System.out.println("3) Rendirse");
+						opcionCombate = sc.nextInt();
+						sc.nextLine();	
+					}
+					if (opcionCombate == 1) {
+						if (PokemonEquipo.size() <= 0) {
+							System.out.println();
+							System.out.println("Te has quedado sin pokemons en tu equipo!");
+							System.out.println("Volviendo al menu...");
+							opcionCombate = 3;
+						}
+						while (actualJugador < PokemonEquipo.size() && actualEnemigo < PokemonEnemigo.size()) {
+						    combatir(jugador, enemigo);
+						    if (Cambio == true) {
+						    	Cambio = false;
+						    }
+						    if (jugador.nombre.equals(enemigo.nombre)) {
+						    	MostrarJugador = true;
+						    	MuertoJugador = true;
+						    	MostrarEnemigo = true;
+						        AñadirMuertos("Registros.txt", PokemonEquipo.get(actualJugador), "Muerto");
+						    	PokemonEnemigo.remove(actualEnemigo);
+						        PokemonEquipo.remove(actualJugador);
+						        actualJugador++;
+						        actualEnemigo++;
+						        if (actualJugador < PokemonEquipo.size()) {
+						            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+						        }
+						        else if (actualJugador > PokemonEquipo.size()){
+									System.out.println();
+									System.out.println("Todos sus Pokemon a sido debilidatos " + NombreUsuario);
+									System.out.println("Volviendo al menu...");
+									opcionCombate = 3;
+									return false;
+						        }
+						        break;
+						    }
+						    if (jugador.puntos <= 0) {
+						    	MostrarJugador = true;
+						    	MuertoJugador = true;
+						        AñadirMuertos("Registros.txt", PokemonEquipo.get(actualJugador), "Muerto");
+						        PokemonEquipo.remove(actualJugador);
+						        actualJugador++;
+						        if (actualJugador < PokemonEquipo.size()) {
+						            jugador = C.crearPokemon(PokemonEquipo.get(actualJugador));
+						        }
+						        else if (PokemonEquipo.size() == 0) {
+									System.out.println();
+									System.out.println("Todos sus Pokemon a sido debilidatos " + NombreUsuario);
+									System.out.println("Volviendo al menu...");
+									opcionCombate = 3;
+									return false;
+						        }
+						        break;
+						    }
+						    if (enemigo.puntos <= 0) {
+						    	MostrarEnemigo = true;
+						    	PokemonEnemigo.remove(actualEnemigo);
+						    	if (PokemonEnemigo.size() == 0) {
+						    	    System.out.println();
+						    	    System.out.println("Ganaste contra " + entrenador);
+						    	    System.out.println("");
+						    	}
+						        if (actualEnemigo < PokemonEnemigo.size()) {
+						            enemigo = C.crearPokemon(PokemonEnemigo.get(actualEnemigo));
+						        }
+						        break;
+						    }
+						}	
+					}
+					if (opcionCombate == 2) {
+						System.out.println();
+						System.out.println("Escoje un Pokemon de su equipo a cambiar");
+						System.out.println();
+						for (int f = 0; f < PokemonEquipo.size(); f++) {
+							if (f == 0) {
+								System.out.println(f +") " + "volver");	
+							}
+							System.out.println(f+1 +") " + PokemonEquipo.get(f));	
+						}
+						int OpcionCambio = sc.nextInt();
+						sc.nextLine();
+						if (OpcionCambio >= 1 && OpcionCambio <= 6 && OpcionCambio != actualJugador) {
+							Cambio = true;
+							System.out.println(NombreUsuario + " saca del combate a " + PokemonEquipo.get(actualJugador));
+							System.out.println();
+							actualJugador = OpcionCambio - 1;
+							System.out.println(NombreUsuario + " cambia a " + PokemonEquipo.get(actualJugador));
+							opcionCombate = 1;
+						}
+						else if (OpcionCambio != 0 && OpcionCambio > 6 && OpcionCambio < 0){
+							System.out.println();
+							System.out.println("Cambio Invalido, escoje una opcion del pokemon!");
+							break;
+						}
+					}
+			        else if (opcionCombate == 3) {
+			            return false;
+			        }
+			    }
+			}
+		} catch (Exception e) {
+			System.out.println("Error Alto Mando " + e);
+		}
 		return derrotarTodos;
 	}
 	
