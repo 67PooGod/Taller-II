@@ -25,8 +25,7 @@ public class Main {
 		boolean mostrado = false;
 		boolean NuevoUsuario = true;
 		boolean GuardarCaptura = false;
-		int AltoMando = 0;
-		int cont_lineas = 0;
+		boolean Empezar = true;
 		Pokemon p = new Pokemon(null, false, "none", null , null);
 		Scanner sc = new Scanner(System.in);
 		while (salir == false) {
@@ -155,6 +154,10 @@ public class Main {
 							System.out.println();
 							if (puedeEntrar == true) {
 								boolean ResultadoAltoMando = p.batallarAltoMando("Alto Mando.txt", Equipador, EstadoEquipo, nombre);
+								if (ResultadoAltoMando == true) {
+									System.out.println();
+									System.out.println("Completaste el juego " + nombre);
+								}
 							}
 							else {
 								System.out.println();
@@ -549,5 +552,66 @@ public class Main {
 	        System.out.println("Error guardar medallas " + e);
 	    }
 		return resultado;
+	}
+	//wip verificar y actualizar las medallas
+	public static void ActualizarMedallas(String archivo1, String archivo2, String Texto) {
+		ArrayList<String> N = new ArrayList<>();
+		ArrayList<String> MedallaN = new ArrayList<>();
+		ArrayList<String> Estado = new ArrayList<>();
+		ArrayList<String> CantPokemon = new ArrayList<>();
+		ArrayList<String> Pokemons = new ArrayList<>();
+		ArrayList<String> Resultado = new ArrayList<>();
+		boolean Arreglar = false;
+		int numero = 0;
+		int contLineas = 0;
+		int medallas = 0;
+	    try {
+			FileReader archivoConteo = new FileReader(archivo1);
+			BufferedReader leyendo = new BufferedReader(archivoConteo);
+			String linea = leyendo.readLine();
+			while (linea != null) {
+				String datos[] = linea.split(";");
+				if (contLineas <= 0) {
+					int Maximo = datos.length - 1;
+					numero = Maximo;
+				}
+				contLineas++;
+	            linea = leyendo.readLine();
+	        }
+			if (numero != cantLineasRival(archivo2)) {
+				Arreglar = true;
+			}
+			if (Arreglar = true) {
+				FileReader archivoConteo2 = new FileReader(archivo2);
+				BufferedReader leyendo2 = new BufferedReader(archivoConteo2);
+				String linea2 = leyendo2.readLine();
+				while (linea2 != null) {
+					String datos2[] = linea2.split(";");
+	                if (datos2[2].equals("Derrotado")) {
+	                    datos2[2] = Texto;
+	                }
+	                String lineaNueva = "";
+	                for (int i = 0; i < datos2.length; i++) {
+	                    lineaNueva += datos2[i];
+	                    if (i < datos2.length - 1) {
+	                        lineaNueva += ";";
+	                    }
+	                }
+	                Resultado.add(lineaNueva);
+		            linea2 = leyendo2.readLine();
+	            }
+	        }
+	        leyendo.close();
+	        BufferedWriter escritor = new BufferedWriter(new FileWriter(archivo2));
+	        for (int i = 0; i < Resultado.size(); i++) {
+	            escritor.write(Resultado.get(i));
+	            if (i < Resultado.size() - 1) {
+	                escritor.newLine();
+	            }
+	        }
+	        escritor.close();
+	    } catch (Exception e) {
+	        System.out.println("Error guardar medallas " + e);
+	    }
 	}
 }
