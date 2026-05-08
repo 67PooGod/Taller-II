@@ -170,6 +170,33 @@ public class Main {
 					case 6:
 						// curar
 						// Lucas
+						System.out.println();
+						System.out.println("Tu equipo se ha recuperado!");
+					
+						for (int i = 0; i < Estado.size(); i++) {
+							Estado.set(i, "vivo");
+						}
+						for (int i = 0; i < EstadoEquipo.size(); i++) {
+							EstadoEquipo.set(i, "vivo");
+						}
+
+						try {
+							FileWriter archivoUsuarios = new FileWriter("Registros.txt");
+							BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+							
+							escritorBuffer.write(nombre + ";" + p.getMedallas());
+							escritorBuffer.newLine();
+							
+							for (int i = 0; i < Atrapados.size(); i++) {
+								escritorBuffer.write(Atrapados.get(i) + ";" + Estado.get(i));
+								if (i < Atrapados.size() - 1) {
+									escritorBuffer.newLine();
+								}
+							}
+							escritorBuffer.close();
+						} catch (Exception e) {
+							System.out.println("error" + e);
+						}
 						break;
 					case 7:
 						System.out.println();
