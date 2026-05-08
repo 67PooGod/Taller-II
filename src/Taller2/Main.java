@@ -15,8 +15,8 @@ import java.io.FileNotFoundException;
 public class Main {
 	public static void main(String[] args) {
 		String nombre = null;
-		ArrayList<String> AtrapadosObtenidos = new ArrayList<>();
-		ArrayList<String> EstadoObtenidos = new ArrayList<>();
+		ArrayList<String> atrapadosObtenidos = new ArrayList<>();
+		ArrayList<String> estadoObtenidos = new ArrayList<>();
 		ArrayList<String> Atrapados = new ArrayList<>();
 		ArrayList<String> Estado = new ArrayList<>();
 		ArrayList<String> Equipo = new ArrayList<>();
@@ -25,8 +25,8 @@ public class Main {
 		ArrayList<String> ResultadoBatalla = null;
 		boolean salir = false;
 		boolean mostrado = false;
-		boolean NuevoUsuario = true;
-		boolean GuardarCaptura = false;
+		boolean nuevoUsuario = true;
+		boolean guardarCaptura = false;
 		boolean Empezar = true;
 		Pokemon p = new Pokemon(null, false, "none", null, null);
 		Scanner sc = new Scanner(System.in);
@@ -40,7 +40,7 @@ public class Main {
 			while (opcion == 1) {
 				nombre = VerRegistrosNombre("Registros.txt");
 				if (nombre != null) {
-					NuevoUsuario = false;
+					nuevoUsuario = false;
 					opcion = 2;
 				}
 				if (nombre == null) {
@@ -48,18 +48,19 @@ public class Main {
 				}
 			}
 			while (opcion == 2) {
-				if (NuevoUsuario == false) {
+				if (nuevoUsuario == false) {
 					nombre = VerRegistrosNombre("Registros.txt");
 					Equipador = ActualizarPokemonEquipo("Registros.txt");
 					EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");
+					cargarTodo("Registros.txt", Atrapados, Estado);
 				}
-				if (NuevoUsuario == true || nombre == null) {
+				if (nuevoUsuario == true || nombre == null) {
 					System.out.print("Ingrese Apodo: ");
 					String Nombre = sc.nextLine();
 					Sobreescribir("Registros.txt", Nombre, p.getMedallas(), Atrapados, Estado);
 					p.setGuardar(true);
-					GuardarCaptura = true;
-					NuevoUsuario = false;
+					guardarCaptura = true;
+					nuevoUsuario = false;
 				}
 				if (nombre != null && nombre != "") {
 					if (mostrado == false) {
@@ -100,9 +101,9 @@ public class Main {
 						sc.nextLine();
 						if (atrapado != null) {
 							p.setGuardar(true);
-							GuardarCaptura = true;
-							AtrapadosObtenidos.add(atrapado);
-							EstadoObtenidos.add("Vivo");
+							guardarCaptura = true;
+							atrapadosObtenidos.add(atrapado);
+							estadoObtenidos.add("Vivo");
 						}
 						break;
 					case 3:
@@ -115,7 +116,7 @@ public class Main {
 					case 4:
 						p.setPokemonEquipo(Equipador);
 						for (int e = Equipador.size() - 1; e >= 0; e--) {
-							if (EstadoEquipo.get(e).equals("Muerto")) {
+							if (EstadoEquipo.get(e).equalsIgnoreCase("Muerto")) {
 								Equipador.remove(e);
 								EstadoEquipo.remove(e);
 							}
@@ -144,7 +145,7 @@ public class Main {
 						boolean puedeEntrar = VerificarMedallas("Registros.txt");
 						p.setPokemonEquipo(Equipador);
 						for (int e = Equipador.size() - 1; e >= 0; e--) {
-							if (EstadoEquipo.get(e).equals("Muerto")) {
+							if (EstadoEquipo.get(e).equalsIgnoreCase("Muerto")) {
 								Equipador.remove(e);
 								EstadoEquipo.remove(e);
 							}
@@ -202,13 +203,13 @@ public class Main {
 						System.out.println();
 						System.out.println("Guardado");
 						System.out.println();
-						if (GuardarCaptura == true) {
-							GuardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, AtrapadosObtenidos,
-									Estado, EstadoObtenidos, false);
-							for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
-								AtrapadosObtenidos.remove(s);
+						if (guardarCaptura == true) {
+							guardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, atrapadosObtenidos,
+									Estado, estadoObtenidos, false);
+							for (int s = 0; s < atrapadosObtenidos.size(); s++) {
+								atrapadosObtenidos.remove(s);
 							}
-							GuardarCaptura = false;
+							guardarCaptura = false;
 						} else {
 							Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);
 						}
@@ -217,13 +218,13 @@ public class Main {
 						System.out.println();
 						System.out.println("Nos vemos entrenador...");
 						System.out.println();
-						if (GuardarCaptura == true) {
-							GuardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, AtrapadosObtenidos,
-									Estado, EstadoObtenidos, false);
-							for (int s = 0; s < AtrapadosObtenidos.size(); s++) {
-								AtrapadosObtenidos.remove(s);
+						if (guardarCaptura == true) {
+							guardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, atrapadosObtenidos,
+									Estado, estadoObtenidos, false);
+							for (int s = 0; s < atrapadosObtenidos.size(); s++) {
+								atrapadosObtenidos.remove(s);
 							}
-							GuardarCaptura = false;
+							guardarCaptura = false;
 						} else {
 							Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);
 						}
@@ -234,7 +235,7 @@ public class Main {
 					}
 					if (opcion2 == 8) {
 						nombre = null;
-						NuevoUsuario = true;
+						nuevoUsuario = true;
 						break;
 					}
 				}
@@ -340,7 +341,7 @@ public class Main {
 
 	public static String VerRegistrosNombre(String Archivo) {
 		String NombreIngresado = null;
-		boolean NuevoUsuario = true;
+		boolean nuevoUsuario = true;
 		int cont_lineas = 0;
 		Pokemon p = new Pokemon(null, false, "0", null, null);
 		ArrayList<String> Atrapados = new ArrayList<>();
@@ -357,7 +358,7 @@ public class Main {
 					String Nombre = datos[0];
 					String Medalla = datos[1];
 					if (Nombre != null && Nombre != " ") {
-						NuevoUsuario = false;
+						nuevoUsuario = false;
 						p.setNombre(Nombre);
 						NombreIngresado = Nombre;
 						p.setGuardar(false);
@@ -415,7 +416,7 @@ public class Main {
 		}
 	}
 
-	public static void GuardarCapturados(String archivo, String Nombre, String Medallas,
+	public static void guardarCapturados(String archivo, String Nombre, String Medallas,
 			ArrayList<String> PokemonAtrapados, ArrayList<String> PokemonNuevos, ArrayList<String> Estado,
 			ArrayList<String> EstadoObtenido, boolean yaEscrito) {
 		ArrayList<String> respaldo = new ArrayList<>();
@@ -627,7 +628,7 @@ public class Main {
 				String linea2 = leyendo2.readLine();
 				while (linea2 != null) {
 					String datos2[] = linea2.split(";");
-					if (datos2[2].equals("Derrotado")) {
+					if (datos2[2].equalsIgnoreCase("Derrotado")) {
 						datos2[2] = Texto;
 					}
 					String lineaNueva = "";
@@ -678,5 +679,23 @@ public class Main {
 			}
 		}
 
+	}
+	public static void cargarTodo(String archivo, ArrayList<String> atrapados, ArrayList<String> estados) {
+	    try {
+	        BufferedReader lector = new BufferedReader(new FileReader(archivo));
+	        String linea = lector.readLine();
+	        linea = lector.readLine();
+	        while (linea != null) {
+	            String[] partes = linea.split(";");
+	            if (partes.length >= 2) {
+	                atrapados.add(partes[0]);
+	                estados.add(partes[1]);
+	            }
+	            linea = lector.readLine();
+	        }
+	        lector.close();
+	    } catch (Exception e) {
+	        System.out.println("error" + e);
+	    }
 	}
 }
