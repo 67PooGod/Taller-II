@@ -689,6 +689,8 @@ public class Main {
 
 	public static void cargarTodo(String archivo, ArrayList<String> atrapados, ArrayList<String> estados) {
 		try {
+			atrapados.clear();
+	        estados.clear();
 			BufferedReader lector = new BufferedReader(new FileReader(archivo));
 			String linea = lector.readLine();
 			linea = lector.readLine();
