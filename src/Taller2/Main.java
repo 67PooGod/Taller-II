@@ -158,7 +158,8 @@ public class Main {
 						p.setPokemonEquipo(Equipo);
 						System.out.println();
 						if (puedeEntrar == true) {
-							boolean ResultadoAltoMando = p.batallarAltoMando("Alto Mando.txt", Equipador, EstadoEquipo,nombre);
+							boolean ResultadoAltoMando = p.batallarAltoMando("Alto Mando.txt", Equipador, EstadoEquipo,
+									nombre);
 							if (ResultadoAltoMando == true) {
 								System.out.println();
 								System.out.println("Completaste el juego " + nombre);
@@ -173,21 +174,26 @@ public class Main {
 						// Lucas
 						System.out.println();
 						System.out.println("Tu equipo se ha recuperado!");
-					
+
+						Atrapados.clear();
+						Estado.clear();
+						cargarTodo("Registros.txt", Atrapados, Estado);
+
 						for (int i = 0; i < Estado.size(); i++) {
-							Estado.set(i, "vivo");
+							Estado.set(i, "Vivo");
 						}
+
 						for (int i = 0; i < EstadoEquipo.size(); i++) {
-							EstadoEquipo.set(i, "vivo");
+							EstadoEquipo.set(i, "Vivo");
 						}
 
 						try {
 							FileWriter archivoUsuarios = new FileWriter("Registros.txt");
 							BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
-							
+
 							escritorBuffer.write(nombre + ";" + p.getMedallas());
 							escritorBuffer.newLine();
-							
+
 							for (int i = 0; i < Atrapados.size(); i++) {
 								escritorBuffer.write(Atrapados.get(i) + ";" + Estado.get(i));
 								if (i < Atrapados.size() - 1) {
@@ -196,7 +202,7 @@ public class Main {
 							}
 							escritorBuffer.close();
 						} catch (Exception e) {
-							System.out.println("error" + e);
+							System.out.println("error " + e);
 						}
 						break;
 					case 7:
@@ -680,22 +686,23 @@ public class Main {
 		}
 
 	}
+
 	public static void cargarTodo(String archivo, ArrayList<String> atrapados, ArrayList<String> estados) {
-	    try {
-	        BufferedReader lector = new BufferedReader(new FileReader(archivo));
-	        String linea = lector.readLine();
-	        linea = lector.readLine();
-	        while (linea != null) {
-	            String[] partes = linea.split(";");
-	            if (partes.length >= 2) {
-	                atrapados.add(partes[0]);
-	                estados.add(partes[1]);
-	            }
-	            linea = lector.readLine();
-	        }
-	        lector.close();
-	    } catch (Exception e) {
-	        System.out.println("error" + e);
-	    }
+		try {
+			BufferedReader lector = new BufferedReader(new FileReader(archivo));
+			String linea = lector.readLine();
+			linea = lector.readLine();
+			while (linea != null) {
+				String[] partes = linea.split(";");
+				if (partes.length >= 2) {
+					atrapados.add(partes[0]);
+					estados.add(partes[1]);
+				}
+				linea = lector.readLine();
+			}
+			lector.close();
+		} catch (Exception e) {
+			System.out.println("error" + e);
+		}
 	}
 }
