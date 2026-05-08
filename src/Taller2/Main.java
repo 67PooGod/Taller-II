@@ -680,7 +680,7 @@ public class Main {
 			PokemonCombate infoPoke = PokemonCombate.crearPokemon(nombrePoke);
 
 			if (infoPoke != null) {
-				System.out.println((i + 1) + ") " + infoPoke.getNombre() + "|" + infoPoke.getTipo()
+				System.out.println((i + 1) + ") " + infoPoke.getNombre() + " | " + infoPoke.getTipo()
 						+ " | Stats totales: " + infoPoke.getPuntos());
 			}
 		}
