@@ -287,7 +287,7 @@ public class Pokemon {
 				String[] datos = linea.split(";");
 				String Nombre = datos[1];
 				String Estado = datos[2];
-				if (Estado.equals("Derrotado")) {
+				if (Estado.equalsIgnoreCase("Derrotado")) {
 					ContVictoria++;
 				}
 				ListaRivales.add(Nombre);
@@ -362,7 +362,7 @@ public class Pokemon {
 					String EstadoDerrotar = datos[2];
 					String cantPokemon = datos[3];
 					int EnteroCantPokemon = Integer.valueOf(cantPokemon);
-					if (EstadoDerrotar.equals("Sin derrotar")) {
+					if (EstadoDerrotar.equalsIgnoreCase("Sin derrotar")) {
 						if (EnteroCantPokemon == 1) {
 							EntrenadorRival.add(Entrenador);
 							String Pokemon1 = datos[4];
@@ -721,7 +721,7 @@ public class Pokemon {
 			}
 			leyendo.close();
 			for (int m = 0; m < Resultado2.size(); m++) {
-				if (Resultado2.get(m).equals("Vivo") && Resultado1.get(m).equals(NombrePokemon)) {
+				if (Resultado2.get(m).equalsIgnoreCase("Vivo") && Resultado1.get(m).equals(NombrePokemon)) {
 					Resultado2.set(m, Texto);
 				}
 			}
