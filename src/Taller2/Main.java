@@ -1,6 +1,6 @@
 //Marcelo Nicolás Osandon Nuñez, 22036682-0, Ingienería Civil en Computación e Informática
 //Lucas Vicente González cortes, 22336895-6, Ingienería Civil en Computación e Informática
-
+//67
 package Taller2;
 
 import java.util.Scanner;
