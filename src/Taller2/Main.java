@@ -41,6 +41,11 @@ public class Main {
 				nombre = VerRegistrosNombre("Registros.txt");
 				if (nombre != null) {
 					nuevoUsuario = false;
+
+					Equipador = ActualizarPokemonEquipo("Registros.txt");
+					EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");
+					cargarTodo("Registros.txt", Atrapados, Estado);
+
 					opcion = 2;
 				}
 				if (nombre == null) {
@@ -48,16 +53,11 @@ public class Main {
 				}
 			}
 			while (opcion == 2) {
-				if (nuevoUsuario == false) {
-					nombre = VerRegistrosNombre("Registros.txt");
-					Equipador = ActualizarPokemonEquipo("Registros.txt");
-					EstadoEquipo = ActualizarEstadoEquipo("Registros.txt");
-					cargarTodo("Registros.txt", Atrapados, Estado);
-				}
+
 				if (nuevoUsuario == true || nombre == null) {
 					System.out.print("Ingrese Apodo: ");
-					String Nombre = sc.nextLine();
-					Sobreescribir("Registros.txt", Nombre, p.getMedallas(), Atrapados, Estado);
+					nombre = sc.nextLine();
+					Sobreescribir("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado);
 					p.setGuardar(true);
 					guardarCaptura = true;
 					nuevoUsuario = false;
@@ -104,6 +104,12 @@ public class Main {
 							guardarCaptura = true;
 							atrapadosObtenidos.add(atrapado);
 							estadoObtenidos.add("Vivo");
+							Atrapados.add(atrapado);
+							Estado.add("Vivo");
+							if (Equipador.size() < 6) {
+								Equipador.add(atrapado);
+								EstadoEquipo.add("Vivo");
+							}
 						}
 						break;
 					case 3:
@@ -175,10 +181,6 @@ public class Main {
 						System.out.println();
 						System.out.println("Tu equipo se ha recuperado!");
 
-						Atrapados.clear();
-						Estado.clear();
-						cargarTodo("Registros.txt", Atrapados, Estado);
-
 						for (int i = 0; i < Estado.size(); i++) {
 							Estado.set(i, "Vivo");
 						}
@@ -209,30 +211,59 @@ public class Main {
 						System.out.println();
 						System.out.println("Guardado");
 						System.out.println();
-						if (guardarCaptura == true) {
-							guardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, atrapadosObtenidos,
-									Estado, estadoObtenidos, false);
-							for (int s = 0; s < atrapadosObtenidos.size(); s++) {
-								atrapadosObtenidos.remove(s);
+						try {
+							FileWriter archivoUsuarios = new FileWriter("Registros.txt");
+							BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+
+							escritorBuffer.write(nombre + ";" + p.getMedallas());
+							escritorBuffer.newLine();
+
+							for (int i = 0; i < Atrapados.size(); i++) {
+								escritorBuffer.write(Atrapados.get(i) + ";" + Estado.get(i));
+								if (i < Atrapados.size() - 1) {
+									escritorBuffer.newLine();
+								}
 							}
-							guardarCaptura = false;
-						} else {
-							Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);
+							escritorBuffer.close();
+
+							if (guardarCaptura == true) {
+								for (int s = 0; s < atrapadosObtenidos.size(); s++) {
+									atrapadosObtenidos.remove(s);
+								}
+								guardarCaptura = false;
+							}
+						} catch (Exception e) {
+							System.out.println("Error " + e);
 						}
 						break;
+
 					case 8:
 						System.out.println();
 						System.out.println("Nos vemos entrenador...");
 						System.out.println();
-						if (guardarCaptura == true) {
-							guardarCapturados("Registros.txt", nombre, p.getMedallas(), Atrapados, atrapadosObtenidos,
-									Estado, estadoObtenidos, false);
-							for (int s = 0; s < atrapadosObtenidos.size(); s++) {
-								atrapadosObtenidos.remove(s);
+						try {
+							FileWriter archivoUsuarios = new FileWriter("Registros.txt");
+							BufferedWriter escritorBuffer = new BufferedWriter(archivoUsuarios);
+
+							escritorBuffer.write(nombre + ";" + p.getMedallas());
+							escritorBuffer.newLine();
+
+							for (int i = 0; i < Atrapados.size(); i++) {
+								escritorBuffer.write(Atrapados.get(i) + ";" + Estado.get(i));
+								if (i < Atrapados.size() - 1) {
+									escritorBuffer.newLine();
+								}
 							}
-							guardarCaptura = false;
-						} else {
-							Guardar("Registros.txt", nombre, p.getMedallas(), Atrapados, Estado, false);
+							escritorBuffer.close();
+
+							if (guardarCaptura == true) {
+								for (int s = 0; s < atrapadosObtenidos.size(); s++) {
+									atrapadosObtenidos.remove(s);
+								}
+								guardarCaptura = false;
+							}
+						} catch (Exception e) {
+							System.out.println("Error " + e);
 						}
 						break;
 					default:
@@ -690,7 +721,7 @@ public class Main {
 	public static void cargarTodo(String archivo, ArrayList<String> atrapados, ArrayList<String> estados) {
 		try {
 			atrapados.clear();
-	        estados.clear();
+			estados.clear();
 			BufferedReader lector = new BufferedReader(new FileReader(archivo));
 			String linea = lector.readLine();
 			linea = lector.readLine();
